@@ -57,7 +57,7 @@ $ws = New-Object -ComObject WScript.Shell
 $desktop = [Environment]::GetFolderPath('Desktop')
 $name = 'Astro' + [char]0x307E + [char]0x306A + [char]0x3073 + [char]0x30CE + [char]0x30FC + [char]0x30C8
 $lnk = Join-Path $desktop ($name + '.lnk')
-$batFile = Join-Path $AppDir 'start.bat'
+$batFile = Join-Path $AppDir 'START-Windows.bat'
 # also recreate shortcuts that still point at the old launcher name
 if (-not (Test-Path $lnk) -or $ws.CreateShortcut($lnk).TargetPath -ne $batFile) {
     $sc = $ws.CreateShortcut($lnk)

@@ -25,7 +25,7 @@ Node.js が入っているかは、ターミナル（Windowsはコマンドプ�
 ## 2. ダウンロードする
 
 ```bash
-git clone https://github.com/tawosizuku/astro-study-ai.git
+git clone https://github.com/<ユーザー名>/<リポジトリ名>.git
 ```
 
 git を使わない場合は、GitHub の緑色の「Code」ボタン →「Download ZIP」でも大丈夫です。
@@ -36,8 +36,8 @@ git を使わない場合は、GitHub の緑色の「Code」ボタン →「Down
 
 ダウンロードしたフォルダの中にある、次のファイルを**ダブルクリック**します。
 
-- **Mac** → `Astro学習支援AI.app`
-- **Windows** → `start.bat`
+- **Mac** → `START-Mac.app`
+- **Windows** → `START-Windows.bat`
 
 ブラウザが開いたら成功です。ターミナルを自分で触る必要はありません。
 
@@ -51,7 +51,7 @@ git を使わない場合は、GitHub の緑色の「Code」ボタン →「Down
 
 ## 5. 2回目からは
 
-`Astro学習支援AI.app` / `start.bat` をダブルクリックするだけです。学習の記録は残っています。
+`START-Mac.app` / `START-Windows.bat` をダブルクリックするだけです。学習の記録は残っています。
 
 ## 困ったとき
 
