@@ -68,45 +68,13 @@ if (-not (Test-Path $lnk) -or $ws.CreateShortcut($lnk).TargetPath -ne $batFile) 
     Write-Host "[setup] Desktop shortcut created." -ForegroundColor Green
 }
 
-$enc = New-Object System.Text.UTF8Encoding($false)  # UTF-8 without BOM
-
-function Write-UTF8 {
-    param([string]$Path, [string]$Content)
-    [System.IO.File]::WriteAllText($Path, $Content, $enc)
-}
-
-# ---- portfolio path: fixed inside astro-study/workspace/ ----
-$portfolio = Join-Path $AppDir "workspace\my-portfolio"
-New-Item -ItemType Directory -Force (Split-Path $portfolio -Parent) | Out-Null
-
-Write-Host "[1/3] my-portfolio: $portfolio" -ForegroundColor DarkGray
-
-# ---- npm install if node_modules missing ----
-if (-not (Test-Path "$portfolio\node_modules")) {
-    Write-Host "[2/3] Running npm install (first time only)..." -ForegroundColor Cyan
-    Push-Location $portfolio
-    & $npmCmd install
-    Pop-Location
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "[Error] npm install failed." -ForegroundColor Red
-        exit 1
-    }
-    Write-Host "[2/3] npm install done." -ForegroundColor Green
-} else {
-    Write-Host "[2/3] node_modules already exists, skipping." -ForegroundColor DarkGray
-}
-
-# ---- start astro dev if not running on 4321 ----
-$portBusy = (netstat -ano 2>$null | Where-Object { $_ -match ":4321\s.*LISTENING" }).Count -gt 0
-if ($portBusy) {
-    Write-Host "[3/3] astro dev already running on :4321" -ForegroundColor DarkGray
-} else {
-    Write-Host "[3/3] Starting astro dev..." -ForegroundColor Cyan
-    Start-Process -WindowStyle Minimized -FilePath "cmd" -ArgumentList "/c cd /d `"$portfolio`" && `"$npmCmd`" run dev"
-    Write-Host "[3/3] astro dev started." -ForegroundColor Green
-}
-
 # ---- start study server if not running on 8787 ----
+# The learner now chooses where to create the project, from the web UI (changed 2026-10-27).
+# This script used to npm-install and start astro dev in a hardcoded workspace\my-portfolio.
+# That folder does not exist in a fresh clone, so Push-Location failed and npm install ran
+# in the app root, and `cd /d "<missing>" && npm run dev` short-circuited, meaning the
+# preview silently never started. Project creation is now POST /api/workspace/create and
+# the preview is started from the study screen.
 $port8787Busy = (netstat -ano 2>$null | Where-Object { $_ -match ":8787\s.*LISTENING" }).Count -gt 0
 if ($port8787Busy) {
     Write-Host "[srv] Study server already running on :8787" -ForegroundColor DarkGray
@@ -114,5 +82,24 @@ if ($port8787Busy) {
     Write-Host "[srv] Starting study server..." -ForegroundColor Cyan
     $env:LOCAL_MODE = "1"
     Start-Process -WindowStyle Minimized -FilePath $nodeExe -ArgumentList "`"$AppDir\server.js`"" -WorkingDirectory $AppDir
-    Write-Host "[srv] Study server started on :8787" -ForegroundColor Green
 }
+
+# ---- wait until the server answers, so the browser does not open on a dead port ----
+# The first run may download Node.js, so wait for a real response instead of a fixed delay.
+$ready = $false
+foreach ($i in 1..30) {
+    Start-Sleep -Milliseconds 500
+    try {
+        Invoke-WebRequest "http://127.0.0.1:8787/index.html" -UseBasicParsing -TimeoutSec 2 | Out-Null
+        $ready = $true
+        break
+    } catch {
+        # not up yet; try again on the next pass
+    }
+}
+if (-not $ready) {
+    Write-Host "[Error] Study server did not start on :8787." -ForegroundColor Red
+    Read-Host "  Press Enter to close"
+    exit 1
+}
+Write-Host "[srv] Ready on http://localhost:8787" -ForegroundColor Green
