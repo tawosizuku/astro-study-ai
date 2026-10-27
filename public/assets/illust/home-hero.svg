@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 380" width="480" height="380" role="img" aria-label="部品を組み上げてポートフォリオができていく様子のイラスト">
+  <defs>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#232a45" flood-opacity="0.10"/>
+    </filter>
+    <filter id="soft-sm" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#232a45" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <!-- やわらかい背景の塊 -->
+  <path d="M248 14 C352 6 446 74 454 172 C462 270 388 348 278 358 C168 368 44 328 26 228 C8 128 144 22 248 14 Z" fill="#fff0e6"/>
+
+  <!-- 組み立て中の「部品」（左に浮いている） -->
+  <g filter="url(#soft-sm)">
+    <rect x="14" y="196" width="104" height="52" rx="12" fill="#ffffff" stroke="#ff5d01" stroke-width="2" stroke-dasharray="7 5"/>
+  </g>
+  <rect x="28" y="212" width="20" height="20" rx="6" fill="#fff0e6"/>
+  <rect x="58" y="214" width="46" height="7" rx="3.5" fill="#232a45" opacity="0.72"/>
+  <rect x="58" y="229" width="30" height="6" rx="3" fill="#6a7186" opacity="0.45"/>
+  <!-- 部品がページへ吸い込まれていく動き -->
+  <path d="M124 206 C146 186 160 176 182 172" fill="none" stroke="#ff5d01" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 8" opacity="0.65"/>
+
+  <!-- ブラウザウィンドウ -->
+  <g filter="url(#soft)">
+    <rect x="70" y="70" width="330" height="240" rx="18" fill="#ffffff" stroke="#e7e3dc" stroke-width="2"/>
+  </g>
+  <path d="M70 100 H400" stroke="#e7e3dc" stroke-width="2"/>
+  <circle cx="92" cy="85" r="4.5" fill="#ff5d01"/>
+  <circle cx="108" cy="85" r="4.5" fill="#ffd0b3"/>
+  <circle cx="124" cy="85" r="4.5" fill="#e7e3dc"/>
+
+  <!-- ヘッダー部品 -->
+  <rect x="86" y="112" width="298" height="34" rx="9" fill="#161d38"/>
+  <rect x="98" y="122" width="14" height="14" rx="4" fill="#ff5d01"/>
+  <rect x="120" y="126" width="34" height="6" rx="3" fill="#ffffff" opacity="0.42"/>
+  <rect x="296" y="126" width="24" height="6" rx="3" fill="#ffffff" opacity="0.55"/>
+  <rect x="328" y="126" width="20" height="6" rx="3" fill="#ffffff" opacity="0.55"/>
+  <rect x="356" y="126" width="16" height="6" rx="3" fill="#ffffff" opacity="0.55"/>
+
+  <!-- 見せ場(Hero)部品 -->
+  <rect x="86" y="158" width="298" height="92" rx="12" fill="#fff6f0"/>
+  <rect x="207" y="172" width="56" height="6" rx="3" fill="#ff5d01"/>
+  <rect x="150" y="188" width="170" height="13" rx="6.5" fill="#232a45" opacity="0.85"/>
+  <rect x="175" y="210" width="120" height="6" rx="3" fill="#6a7186" opacity="0.45"/>
+  <rect x="193" y="224" width="84" height="22" rx="11" fill="#ff5d01"/>
+
+  <!-- 作品カード部品 -->
+  <g>
+    <rect x="86" y="262" width="92" height="38" rx="9" fill="#ffffff" stroke="#e7e3dc" stroke-width="1.5"/>
+    <rect x="96" y="272" width="18" height="18" rx="5" fill="#fff0e6"/>
+    <rect x="122" y="274" width="44" height="6" rx="3" fill="#232a45" opacity="0.7"/>
+    <rect x="122" y="285" width="28" height="5" rx="2.5" fill="#6a7186" opacity="0.4"/>
+  </g>
+  <g>
+    <rect x="189" y="262" width="92" height="38" rx="9" fill="#ffffff" stroke="#e7e3dc" stroke-width="1.5"/>
+    <rect x="199" y="272" width="18" height="18" rx="5" fill="#fff0e6"/>
+    <rect x="225" y="274" width="44" height="6" rx="3" fill="#232a45" opacity="0.7"/>
+    <rect x="225" y="285" width="28" height="5" rx="2.5" fill="#6a7186" opacity="0.4"/>
+  </g>
+  <g opacity="0.45">
+    <rect x="292" y="262" width="92" height="38" rx="9" fill="#ffffff" stroke="#e7e3dc" stroke-width="1.5" stroke-dasharray="6 4"/>
+    <rect x="302" y="272" width="18" height="18" rx="5" fill="#f1eee9"/>
+    <rect x="328" y="274" width="44" height="6" rx="3" fill="#6a7186" opacity="0.4"/>
+    <rect x="328" y="285" width="28" height="5" rx="2.5" fill="#6a7186" opacity="0.3"/>
+  </g>
+
+  <!-- ゴールの星バッジ -->
+  <circle cx="408" cy="72" r="30" fill="#ffffff" opacity="0.9"/>
+  <circle cx="408" cy="72" r="24" fill="#ff5d01"/>
+  <path d="M408 60 L410.9 68 L419.4 68.3 L412.8 73.6 L415.1 81.7 L408 77 L400.9 81.7 L403.2 73.6 L396.6 68.3 L405.1 68 Z" fill="#ffffff"/>
+
+  <!-- 一歩ずつ進む道 -->
+  <path d="M132 340 C190 318 240 356 300 334 C330 323 348 326 360 332" fill="none" stroke="#c7cbdb" stroke-width="4" stroke-linecap="round" stroke-dasharray="1 11"/>
+  <circle cx="132" cy="340" r="12" fill="#2e9e6b"/>
+  <path d="M126.5 340 l4 4 l7.5 -8" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="216" cy="337" r="12" fill="#2e9e6b"/>
+  <path d="M210.5 337 l4 4 l7.5 -8" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="300" cy="334" r="15" fill="#ff5d01"/>
+  <circle cx="300" cy="334" r="22" fill="#ff5d01" opacity="0.16"/>
+  <path d="M300 326 L301.9 331.3 L307.5 331.5 L303.1 335 L304.6 340.4 L300 337.3 L295.4 340.4 L296.9 335 L292.5 331.5 L298.1 331.3 Z" fill="#ffffff"/>
+  <circle cx="366" cy="333" r="9" fill="#ffffff" stroke="#e7e3dc" stroke-width="2"/>
+</svg>

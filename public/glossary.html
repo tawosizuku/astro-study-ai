@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>用語集 | Astro学習支援AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+<style>
+  .gl-intro { font-size: 14px; color: #454c63; line-height: 1.9; }
+  .gl-searchbar { margin: 18px 0 8px; }
+  .gl-searchbar input {
+    width: 100%; max-width: 420px; padding: 10px 14px; font-size: 14px;
+    border: 1px solid var(--line, #d9ddea); border-radius: 10px; background: var(--panel, #fff);
+    color: inherit; font-family: inherit;
+  }
+  .gl-group { margin-top: 28px; }
+  .gl-group-head { margin-bottom: 12px; }
+  .gl-phase {
+    display: inline-block; font-family: var(--font-head, inherit); font-weight: 800;
+    font-size: 12px; letter-spacing: 0.08em; color: #fff; background: var(--accent, #6c5ce7);
+    padding: 5px 14px; border-radius: 999px;
+  }
+  /* フェーズごとの色（道のりの雰囲気に合わせてゆるく変える） */
+  .gl-phase--base { background: #6c5ce7; }
+  .gl-phase--header { background: #2d9b74; }
+  .gl-phase--interact { background: #d98324; }
+  .gl-phase--content { background: #c2457e; }
+  .gl-phase--routing { background: #3b73c4; }
+
+  .gl-card {
+    background: var(--panel, #fff); border: 1px solid var(--line, #e7e3de);
+    border-radius: 14px; padding: 18px 20px; margin-bottom: 14px;
+  }
+  .gl-term {
+    font-family: var(--font-head, inherit); font-size: 17px; font-weight: 800;
+    color: var(--ink, #1f1d1b); margin: 0 0 6px; display: flex; align-items: baseline;
+    gap: 10px; flex-wrap: wrap;
+  }
+  .gl-en {
+    font-family: var(--font-code, monospace); font-size: 12px; font-weight: 600;
+    color: var(--accent, #6c5ce7); background: var(--accent-soft, #efebfc);
+    padding: 2px 8px; border-radius: 6px;
+  }
+  .gl-summary { font-size: 13.5px; color: #3a4063; line-height: 1.95; margin: 8px 0; }
+  .gl-summary code {
+    font-family: var(--font-code, monospace); font-size: 12.5px;
+    background: var(--ground, #f4f3fb); padding: 1px 5px; border-radius: 5px; color: var(--ink, #332);
+  }
+  .gl-summary strong { color: var(--accent-deep, #5642d1); }
+  .gl-example {
+    background: var(--ground, #f4f3fb); border: 1px solid var(--line, #e7e3de); border-radius: 10px;
+    padding: 12px 14px; margin: 10px 0 0; font-family: var(--font-code, monospace);
+    font-size: 12.5px; line-height: 1.65; color: var(--ink, #2a2a33);
+    white-space: pre-wrap; overflow-x: auto;
+  }
+  @media (max-width: 640px) {
+    .gl-card { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-name">Astro学習支援AI</span>
+  </div>
+  <nav class="mainnav" aria-label="ページ切替">
+    <a href="index.html">ホーム</a>
+    <a href="roadmap.html">学習の道のり</a>
+    <a href="notebook.html">苦手ノート</a>
+    <a href="glossary.html" class="active" aria-current="page">用語集</a>
+  </nav>
+</header>
+
+<main class="page">
+  <section class="hero hero-slim">
+    <h1 class="hero-title">用語集</h1>
+    <p class="hero-sub gl-intro">教材に出てくる言葉を、いつでもここで見返せます。むずかしい言葉は（かんたんな説明）と小さな例つき。新しい要素が出てきて「これ何だっけ？」と思ったら、ここに戻ってきてください。</p>
+  </section>
+
+  <div class="gl-searchbar">
+    <input id="gl-search" type="search" placeholder="言葉でしぼりこむ（例: props, slot, import）" aria-label="用語を検索" />
+  </div>
+
+  <div id="glossary-root"></div>
+</main>
+
+<script src="common.js"></script>
+<script src="glossary.js"></script>
+</body>
+</html>

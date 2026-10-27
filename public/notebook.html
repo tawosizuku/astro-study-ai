@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>苦手ノート | Astro学習支援AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-name">Astro学習支援AI</span>
+  </div>
+  <nav class="mainnav" aria-label="ページ切替">
+    <a href="index.html">ホーム</a>
+    <a href="roadmap.html">学習の道のり</a>
+    <a href="notebook.html" class="active" aria-current="page">苦手ノート</a>
+    <a href="glossary.html">用語集</a>
+  </nav>
+</header>
+
+<main class="page">
+  <section class="hero hero-slim">
+    <h1 class="hero-title">苦手ノート</h1>
+    <p class="hero-sub">AI先生が見つけた、あなたのつまずきの記録です。復習問題に合格すると、ここから消えていきます。</p>
+  </section>
+
+  <section id="progress" aria-labelledby="progress-heading">
+    <h2 id="progress-heading" class="sr-only">記録・進捗</h2>
+    <div class="progress-summary" aria-label="学習の記録">
+      <div class="stat-tile">
+        <span class="stat-num" id="stat-cleared">–</span>
+        <span class="stat-label">クリアした単元</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-num" id="stat-weak">–</span>
+        <span class="stat-label">いま覚えている苦手</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-num" id="stat-tries">–</span>
+        <span class="stat-label">挑戦した回数</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="duo">
+    <section class="card" aria-labelledby="weak-heading">
+      <h2 id="weak-heading" class="card-label card-label--plain">いま覚えている苦手</h2>
+      <div id="weak-cards" class="weak-cards"></div>
+      <div id="weak-empty" class="empty-note">苦手の記録はありません。すばらしい状態です！</div>
+    </section>
+
+    <div class="duo-col">
+      <section class="card" id="history" aria-labelledby="history-heading">
+        <div class="history-panel">
+          <button type="button" id="history-toggle" class="history-panel__toggle" aria-expanded="false">
+            <h2 id="history-heading" class="card-label card-label--plain">学習のあゆみ</h2>
+            <span class="history-panel__chevron" aria-hidden="true">▸</span>
+          </button>
+          <div id="history-panel-body" class="history-panel__list" hidden>
+            <div id="full-history" class="history"></div>
+            <div id="history-empty" class="empty-note">まだ記録がありません。</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card danger-zone" aria-labelledby="manage-heading">
+        <h2 id="manage-heading" class="card-label card-label--plain">記憶の管理</h2>
+        <p class="empty-note">苦手ノートと学習のあゆみをすべて消して、最初からやり直します。</p>
+        <button id="reset-btn" class="btn btn-danger">記憶をぜんぶリセットする</button>
+        <p id="reset-status" class="status" role="status"></p>
+      </section>
+    </div>
+  </div>
+</main>
+
+<script src="common.js"></script>
+<script src="auth.js"></script>
+<script src="notebook.js"></script>
+</body>
+</html>

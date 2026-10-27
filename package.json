@@ -1,0 +1,11 @@
+{
+  "name": "astro-study-ai",
+  "version": "1.0.0",
+  "description": "Astro学習支援AI プロトタイプ",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "test:generation": "node scripts/test-generation.js"
+  }
+}

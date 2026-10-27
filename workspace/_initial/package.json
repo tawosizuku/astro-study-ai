@@ -1,0 +1,14 @@
+{
+  "name": "my-portfolio",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/preact": "^3.5.4",
+    "astro": "^4.0.0",
+    "preact": "^10.29.8"
+  }
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>学習の道のり | Astro学習支援AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-name">Astro学習支援AI</span>
+  </div>
+  <nav class="mainnav" aria-label="ページ切替">
+    <a href="index.html">ホーム</a>
+    <a href="roadmap.html" class="active" aria-current="page">学習の道のり</a>
+    <a href="notebook.html">苦手ノート</a>
+    <a href="glossary.html">用語集</a>
+  </nav>
+</header>
+
+<main class="page">
+  <div class="roadmap-header">
+    <a class="mini-link" href="index.html">← ホームに戻る</a>
+    <h1 class="hero-title">学習の道のり</h1>
+  </div>
+
+  <div class="section-tabs" id="section-tabs" role="tablist" aria-label="セクション切替">
+    <button class="section-tab is-active" data-phase="" role="tab" aria-selected="true">すべて</button>
+    <button class="section-tab" data-phase="base" role="tab" aria-selected="false">① BaseLayout</button>
+    <button class="section-tab" data-phase="header" role="tab" aria-selected="false">② Header</button>
+    <button class="section-tab" data-phase="hero" role="tab" aria-selected="false">③ Hero</button>
+    <button class="section-tab" data-phase="works" role="tab" aria-selected="false">④ Works</button>
+    <button class="section-tab" data-phase="rest" role="tab" aria-selected="false">⑤ その他</button>
+    <button class="section-tab" data-phase="interact" role="tab" aria-selected="false">⑥ 動き</button>
+    <button class="section-tab" data-phase="content" role="tab" aria-selected="false">⑦ コンテンツ</button>
+    <button class="section-tab" data-phase="routing" role="tab" aria-selected="false">⑧ ルーティング</button>
+    <button class="section-tab" data-phase="transition" role="tab" aria-selected="false">⑨ 画面遷移</button>
+    <button class="section-tab" data-phase="island" role="tab" aria-selected="false">⑩ アイランド</button>
+  </div>
+
+  <div class="story-path-wrap">
+    <ol id="story-path" class="story-path"></ol>
+  </div>
+</main>
+
+<script src="common.js"></script>
+<script src="auth.js"></script>
+<script src="roadmap.js"></script>
+</body>
+</html>

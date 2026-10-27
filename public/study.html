@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>学習する | Astro学習支援AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="study-page">
+
+<div id="editor-dialog" class="editor-dialog" hidden>
+  <div class="editor-dialog-inner">
+    <p class="editor-dialog-label">どのエディターで開きますか？</p>
+    <div class="editor-dialog-btns">
+      <button type="button" id="editor-vscode-btn" class="btn btn-primary">VS Code</button>
+      <button type="button" id="editor-cursor-btn" class="btn btn-secondary">Cursor</button>
+    </div>
+  </div>
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-name">Astro学習支援AI</span>
+  </div>
+  <nav class="mainnav" aria-label="ページ切替">
+    <a href="index.html">ホーム</a>
+    <a href="roadmap.html" class="active" aria-current="page">学習の道のり</a>
+    <a href="notebook.html">苦手ノート</a>
+    <a href="glossary.html">用語集</a>
+  </nav>
+  <div class="topbar-controls">
+    <label class="use-claude-label" title="チェックするとGeminiキー無しで、このPCのClaudeで採点します（ローカルモードまたはログインが必要）">
+      <input id="use-claude" type="checkbox" />
+      <span>Claudeで採点</span>
+    </label>
+    <input id="gemini-key" type="password" placeholder="Gemini APIキー" aria-label="Gemini APIキー" />
+  </div>
+</header>
+
+<!-- 画面全体はスクロールさせない。もんだい・AI先生の中身だけが、それぞれの枠内でスクロールする -->
+<main class="board board-study" id="study-board">
+  <div class="col-left">
+    <section class="card card-problem" aria-labelledby="problem-heading">
+      <div class="problem-head">
+        <h2 id="problem-heading" class="card-label card-label--accent">セクション1</h2>
+        <button type="button" id="preview-expand-btn" class="icon-btn problem-expand-btn" title="プレビューを広げる" aria-label="プレビューを広げる">
+          <img src="assets/icons/icon-chevron-right.svg" alt="" />
+        </button>
+        <button type="button" id="preview-attach-btn" class="btn btn-ghost btn-sm preview-attach-btn">プレビューをこの画面に戻す</button>
+      </div>
+      <div class="scroll-area">
+        <div id="problem-badge" class="problem-badge" hidden></div>
+        <h3 id="problem-title" class="problem-title">読み込み中…</h3>
+        <div id="work-files" class="work-files" hidden></div>
+        <div id="required-files" class="required-files" hidden></div>
+        <div id="problem-concept" class="problem-concept" hidden></div>
+        <a id="ref-hint-link" class="ref-hint-link" href="#" hidden>🖼 完成イメージを見ながら作りましょう</a>
+        <p id="steps-label" class="problem-section-label" hidden>やること</p>
+        <ol id="problem-steps" class="problem-steps" hidden></ol>
+        <p id="problem-desc" class="problem-desc" hidden></p>
+        <details id="answer-box" class="answer-box" hidden>
+          <summary class="answer-summary">答えを見る</summary>
+          <pre id="answer-code" class="answer-code"></pre>
+        </details>
+      </div>
+    </section>
+
+    <section class="card card-result" aria-labelledby="result-heading">
+      <h2 id="result-heading" class="card-label card-label--accent">AI先生から</h2>
+      <div class="scroll-area">
+        <div id="verdict" class="verdict" hidden></div>
+        <div id="result-empty" class="empty-note">提出すると、ここに「よかったところ」「なおすところ」「ヒント」が届きます。</div>
+        <dl id="result-sections" class="result-sections" hidden>
+          <div class="result-sec sec-good"><dt>よかったところ</dt><dd id="res-good"></dd></div>
+          <div class="result-sec sec-fix"><dt>なおすところ</dt><dd id="res-fix"></dd></div>
+          <div class="result-sec sec-hint"><dt>ヒント</dt><dd id="res-hint"></dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="card-actions" aria-label="提出">
+      <p id="answer-info" class="answer-info" hidden></p>
+      <div class="btnrow">
+        <button class="btn btn-primary" id="submit-btn">提出する</button>
+        <button type="button" class="btn btn-primary" id="next-problem-btn" hidden>次の問題へ →</button>
+        <button type="button" class="btn btn-review" id="exhibit-review-btn" hidden>苦手問題に挑戦する</button>
+        <button type="button" class="btn btn-ghost" id="next-visitor-btn" hidden>次の人へ（最初からやり直す）</button>
+      </div>
+      <p id="status" class="status" role="status"></p>
+    </section>
+  </div>
+
+  <div class="col-right">
+    <section class="card card-preview" aria-labelledby="preview-heading">
+      <div class="preview-head">
+        <h2 id="preview-heading" class="card-label card-label--accent">プレビュー</h2>
+        <div class="preview-tools">
+          <label class="preview-port-label" hidden>ポート
+            <input id="preview-port" type="number" min="1" max="65535" value="4321" aria-label="プレビューのポート番号" />
+          </label>
+          <button type="button" class="btn btn-ghost btn-sm" id="ref-toggle-btn" title="完成イメージと自分のコードを切り替え">完成イメージ</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="preview-reload-btn">再読み込み</button>
+          <a class="mini-link" id="preview-open-link" href="#" target="_blank" rel="noopener">別タブで開く →</a>
+        </div>
+      </div>
+      <div class="preview-frame-wrap">
+        <iframe id="preview-frame" title="あなたのサイトのプレビュー"></iframe>
+        <!-- astro dev が止まっているときだけ、枠に重ねて出す（study.js が出し分ける） -->
+        <div class="preview-down" id="preview-down" hidden>
+          <p class="preview-down__title">プレビューが止まっています</p>
+          <p class="preview-down__note" id="preview-down-note">起動すると、書いたコードがここに表示されます。</p>
+          <button type="button" id="preview-start-btn" class="btn btn-primary">プレビューを起動する</button>
+        </div>
+      </div>    </section>
+  </div>
+</main>
+
+<script src="common.js"></script>
+<script src="auth.js"></script>
+<script src="prompts.js"></script>
+<script src="intro.js"></script>
+<script src="study.js"></script>
+</body>
+</html>

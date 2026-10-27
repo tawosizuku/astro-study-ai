@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>完成イメージ | ポートフォリオ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg: #FAF9F7;
+  --surface: #FFFFFF;
+  --text: #1F1D1B;
+  --text-muted: #6B6560;
+  --accent: #6C5CE7;
+  --accent-dark: #5642D1;
+  --accent-soft: #EFEBFC;
+  --border: #E7E3DE;
+  --font-serif: 'Shippori Mincho', serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-sans); font-size: 16px; line-height: 1.8; -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { font-family: var(--font-serif); margin: 0; font-weight: 600; line-height: 1.4; }
+p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+a:hover { color: var(--accent); }
+ul { list-style: none; margin: 0; padding: 0; }
+img, svg { display: block; }
+.c-wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+.c-eyebrow { display: inline-block; font-size: 12px; letter-spacing: 0.14em; color: var(--accent); font-weight: 600; margin-bottom: 16px; }
+.c-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 28px; border-radius: 4px; font-size: 14px; font-weight: 600; letter-spacing: 0.02em; cursor: pointer; border: 1px solid transparent; }
+.c-btn-primary { background: var(--accent); color: #fff; }
+.c-btn-primary:hover { background: var(--accent-dark); color: #fff; }
+.c-link-arrow { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--text); }
+.c-link-arrow:hover { color: var(--accent); }
+
+/* ── Header ── */
+header.site-header { border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 10; }
+.header-inner { display: flex; align-items: center; justify-content: space-between; height: 80px; }
+.logo { font-family: var(--font-serif); font-size: 19px; font-weight: 600; }
+nav.main-nav { display: flex; gap: 32px; }
+nav.main-nav a { font-size: 14px; letter-spacing: 0.04em; color: var(--text-muted); }
+
+/* ── Hero ── */
+.hero { padding: 120px 0 100px; text-align: center; }
+.hero-inner { max-width: 720px; margin: 0 auto; }
+.hero h1 { font-size: 48px; margin-bottom: 20px; }
+.hero p.lead { color: var(--text-muted); font-size: 16px; line-height: 1.9; margin-bottom: 36px; }
+.hero-cta { display: flex; gap: 24px; justify-content: center; align-items: center; margin-bottom: 48px; }
+.stack-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.stack-tag { font-size: 12px; color: var(--text-muted); border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; }
+
+/* ── Copy band ── */
+.copy-section { padding: 80px 0; background: var(--accent-soft); }
+.copy-inner { max-width: 600px; margin: 0 auto; text-align: center; }
+.copy-inner h2 { font-size: 28px; line-height: 1.6; }
+
+/* ── Section ── */
+.section { padding: 100px 0; }
+.section-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 48px; gap: 24px; flex-wrap: wrap; }
+.section-head h2 { font-size: 32px; }
+
+/* ── Works ── */
+.works-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+.work-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; }
+.work-thumb { aspect-ratio: 4 / 3; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; color: var(--accent); }
+.work-body { padding: 22px; display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
+.work-body h3 { font-size: 18px; }
+.work-body p { color: var(--text-muted); font-size: 14px; line-height: 1.7; }
+.work-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.work-tags span { font-size: 11px; color: var(--text-muted); border: 1px solid var(--border); border-radius: 999px; padding: 4px 10px; }
+
+/* ── About ── */
+.about-inner { display: flex; gap: 48px; align-items: center; margin-bottom: 64px; }
+.about-portrait { width: 160px; height: 160px; flex-shrink: 0; border-radius: 8px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; color: var(--accent); }
+.about-bio { color: var(--text-muted); font-size: 15px; line-height: 1.9; max-width: 520px; }
+.skills-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.skill-pill { font-size: 14px; border: 1px solid var(--border); border-radius: 999px; padding: 9px 18px; }
+
+/* ── CTA ── */
+.cta-band { padding: 90px 0; text-align: center; }
+.cta-band h2 { font-size: 28px; margin-bottom: 14px; }
+.cta-band p { color: var(--text-muted); margin-bottom: 32px; }
+
+/* ── Contact ── */
+.contact-grid { display: grid; grid-template-columns: 280px 1fr; gap: 48px; }
+.contact-info { display: flex; flex-direction: column; gap: 20px; }
+.info-row { display: flex; align-items: center; gap: 14px; padding: 18px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
+.info-icon { width: 36px; height: 36px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.info-label { font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
+.info-value { font-size: 14px; }
+.contact-form { display: flex; flex-direction: column; gap: 20px; }
+.form-row { display: flex; flex-direction: column; gap: 8px; }
+.form-row label { font-size: 13px; color: var(--text-muted); }
+.form-field { border: 1px solid var(--border); border-radius: 4px; background: var(--surface); padding: 12px 14px; font-size: 14px; color: var(--text); font-family: var(--font-sans); }
+textarea.form-field { min-height: 110px; resize: none; }
+.form-submit { align-self: flex-start; margin-top: 4px; }
+
+/* ── Footer ── */
+footer.site-footer { border-top: 1px solid var(--border); padding: 56px 0 28px; }
+.footer-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; margin-bottom: 40px; flex-wrap: wrap; }
+.footer-tagline { color: var(--text-muted); font-size: 14px; margin-top: 8px; max-width: 300px; }
+.footer-links { display: flex; gap: 28px; }
+.footer-links a { font-size: 14px; color: var(--text-muted); }
+.social-row { display: flex; gap: 12px; margin-top: 18px; }
+.social-btn { width: 34px; height: 34px; border: 1px solid var(--border); border-radius: 999px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
+.social-btn:hover { border-color: var(--accent); color: var(--accent); }
+.footer-bottom { border-top: 1px solid var(--border); padding-top: 20px; text-align: center; font-size: 12px; color: var(--text-muted); }
+
+/* ── 完成イメージバッジ ── */
+.ref-badge {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  z-index: 100;
+  pointer-events: none;
+}
+
+@media (max-width: 720px) {
+  /* 学習画面のプレビュー枠は720pxより狭いので、ナビは消さずに詰めて見せる */
+  .header-inner { height: auto; min-height: 64px; padding-block: 12px; flex-wrap: wrap; gap: 8px 16px; }
+  nav.main-nav { gap: 18px; flex-wrap: wrap; }
+  nav.main-nav a { font-size: 13px; }
+  .hero h1 { font-size: 34px; }
+  .works-grid { grid-template-columns: 1fr; }
+  .about-inner { flex-direction: column; }
+  .about-portrait { width: 100%; height: 180px; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .section-head { flex-direction: column; align-items: flex-start; }
+  .footer-top { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="ref-badge">完成イメージ</div>
+
+<header class="site-header">
+  <div class="c-wrap header-inner">
+    <a class="logo" href="#top">Your Name.</a>
+    <nav class="main-nav">
+      <a href="#top">Home</a>
+      <a href="#about">About</a>
+      <a href="#works">Works</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="top">
+    <div class="c-wrap hero-inner">
+      <span class="c-eyebrow">PORTFOLIO</span>
+      <h1>つくりながら、学ぶ。</h1>
+      <p class="lead">Astroでウェブサイトをひとつずつ組み立てながら、考えたことや作ったものを記録していくポートフォリオです。</p>
+      <div class="hero-cta">
+        <a class="c-btn c-btn-primary" href="#works">
+          Worksを見る
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="c-link-arrow" href="#about">About について</a>
+      </div>
+      <div class="stack-row">
+        <span class="stack-tag">HTML</span>
+        <span class="stack-tag">CSS</span>
+        <span class="stack-tag">JavaScript</span>
+        <span class="stack-tag">Astro</span>
+        <span class="stack-tag">Git</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="works">
+    <div class="c-wrap">
+      <div class="section-head">
+        <div>
+          <span class="c-eyebrow">WORKS</span>
+          <h2>つくったもの</h2>
+        </div>
+        <a class="c-link-arrow" href="#works">
+          すべて見る
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+      <div class="works-grid">
+        <div class="work-card">
+          <div class="work-thumb">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M3 8h18" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <div class="work-body">
+            <h3>プロジェクト名 01</h3>
+            <p>作品の簡単な説明がここに入ります。何を作ったか、工夫した点など。</p>
+            <div class="work-tags"><span>Astro</span><span>CSS</span></div>
+            <a class="c-link-arrow" href="#">詳しく見る →</a>
+          </div>
+        </div>
+        <div class="work-card">
+          <div class="work-thumb">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M3 8h18" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <div class="work-body">
+            <h3>プロジェクト名 02</h3>
+            <p>作品の簡単な説明がここに入ります。何を作ったか、工夫した点など。</p>
+            <div class="work-tags"><span>JavaScript</span></div>
+            <a class="c-link-arrow" href="#">詳しく見る →</a>
+          </div>
+        </div>
+        <div class="work-card">
+          <div class="work-thumb">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M3 8h18" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <div class="work-body">
+            <h3>プロジェクト名 03</h3>
+            <p>作品の簡単な説明がここに入ります。何を作ったか、工夫した点など。</p>
+            <div class="work-tags"><span>HTML</span><span>CSS</span></div>
+            <a class="c-link-arrow" href="#">詳しく見る →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="copy-section">
+    <div class="c-wrap copy-inner">
+      <h2>手を動かした分だけ、<br>理解は深くなる。</h2>
+    </div>
+  </section>
+
+  <section class="section" id="about" style="padding-top: 0;">
+    <div class="c-wrap">
+      <div class="about-inner">
+        <div class="about-portrait">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <span class="c-eyebrow">ABOUT</span>
+          <h2 style="font-size: 28px; margin-bottom: 12px;">Your Name</h2>
+          <p class="about-bio">
+            普段は別の分野を学びつつ、空いた時間にAstroでこのポートフォリオサイトを組み立てています。
+            小さな部品(コンポーネント)を一つずつ理解しながら、実際に手を動かして形にしていくことを大事にしています。
+          </p>
+        </div>
+      </div>
+      <div class="section-head">
+        <div>
+          <span class="c-eyebrow">SKILL</span>
+          <h2>できること</h2>
+        </div>
+      </div>
+      <div class="skills-row">
+        <span class="skill-pill">HTML</span>
+        <span class="skill-pill">CSS</span>
+        <span class="skill-pill">JavaScript</span>
+        <span class="skill-pill">Astro</span>
+        <span class="skill-pill">Git / GitHub</span>
+        <span class="skill-pill">Figma</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="c-wrap">
+      <h2>話してみませんか?</h2>
+      <p>感想やご質問、お仕事のご相談など、お気軽にご連絡ください。</p>
+      <a class="c-btn c-btn-primary" href="#contact">
+        Contactへ
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <section class="section" id="contact">
+    <div class="c-wrap">
+      <div class="section-head">
+        <div>
+          <span class="c-eyebrow">CONTACT</span>
+          <h2>お問い合わせ</h2>
+        </div>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <div class="info-row">
+            <div class="info-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M4 7l8 6 8-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <div class="info-label">Mail</div>
+              <div class="info-value">you@example.com</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 6L3 12L8 18M16 6L21 12L16 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <div class="info-label">GitHub</div>
+              <div class="info-value">github.com/yourname</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 5h5v5M19 5l-7 7M8 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <div class="info-label">SNS</div>
+              <div class="info-value">@yourname</div>
+            </div>
+          </div>
+        </div>
+        <div class="contact-form">
+          <div class="form-row">
+            <label>お名前</label>
+            <div class="form-field">山田 太郎</div>
+          </div>
+          <div class="form-row">
+            <label>メールアドレス</label>
+            <div class="form-field">you@example.com</div>
+          </div>
+          <div class="form-row">
+            <label>メッセージ</label>
+            <div class="form-field" style="min-height: 110px;">お問い合わせ内容をご記入ください。</div>
+          </div>
+          <a class="c-btn c-btn-primary form-submit" href="#">送信する</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="c-wrap">
+    <div class="footer-top">
+      <div>
+        <a class="logo" href="#top">Your Name.</a>
+        <p class="footer-tagline">Astroで学びながらつくる、個人のポートフォリオサイトです。</p>
+        <div class="social-row">
+          <a class="social-btn" href="#" aria-label="Mail">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M4 7l8 6 8-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a class="social-btn" href="#" aria-label="Code">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 6L3 12L8 18M16 6L21 12L16 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a class="social-btn" href="#" aria-label="Link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M14 5h5v5M19 5l-7 7M8 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+      <nav class="footer-links">
+        <a href="#top">Home</a>
+        <a href="#about">About</a>
+        <a href="#works">Works</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+    <div class="footer-bottom">© 2026 Your Name. All rights reserved.</div>
+  </div>
+</footer>
+
+</body>
+</html>

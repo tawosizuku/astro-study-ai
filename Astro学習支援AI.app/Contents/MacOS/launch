@@ -1,0 +1,42 @@
+#!/bin/bash
+# Astro学習支援AI のランチャー。
+# サーバーが動いていなければ起動し、ブラウザでホームを開く。
+# この .app はリポジトリの prototypes/astro-study/ の中に置く前提で、
+# 自分の位置から server.js を探す（デスクトップにはエイリアス/シンボリックリンクを置く）。
+set -u
+PORT=8787
+
+# .app/Contents/MacOS/launch → astro-study/
+HERE="$(cd "$(dirname "$0")/../../.." && pwd)"
+LOG="$HERE/launcher.log"
+
+notify () { osascript -e "display notification \"$1\" with title \"Astro学習支援AI\"" >/dev/null 2>&1; }
+fail () { osascript -e "display dialog \"$1\" with title \"Astro学習支援AI\" buttons {\"OK\"} default button 1 with icon stop" >/dev/null 2>&1; exit 1; }
+
+[ -f "$HERE/server.js" ] || fail "server.js が見つかりません。このアプリは prototypes/astro-study/ の中に置いてください。（探した場所: $HERE）"
+
+# node を探す。Finderから起動するとPATHが最小限なので、よくある場所も見る
+NODE="$(command -v node || true)"
+for p in /usr/local/bin/node /opt/homebrew/bin/node "$HOME/.volta/bin/node"; do
+  [ -n "$NODE" ] && break
+  [ -x "$p" ] && NODE="$p"
+done
+[ -n "$NODE" ] || fail "Node.js が見つかりません。インストールしてからもう一度お試しください。"
+
+# すでに動いていれば起動しない
+if ! curl -s -o /dev/null --max-time 2 "http://localhost:$PORT/index.html"; then
+  cd "$HERE" || fail "フォルダに移動できません: $HERE"
+  # LOCAL_MODE=1 は必須。これが無いと server.js が 127.0.0.1 ではなく全ネットワーク面で
+  # 待ち受け、同じWi-Fiの他人が /api/auth/guest でセッションを取って /api/claude などを
+  # 叩けてしまう（2026-10-27 修正。Windows の start.bat は以前から設定済み）
+  LOCAL_MODE=1 nohup "$NODE" server.js >> "$LOG" 2>&1 &
+  for _ in $(seq 1 20); do
+    sleep 0.5
+    curl -s -o /dev/null --max-time 2 "http://localhost:$PORT/index.html" && break
+  done
+  curl -s -o /dev/null --max-time 2 "http://localhost:$PORT/index.html" \
+    || fail "サーバーを起動できませんでした。詳しくは $LOG を見てください。"
+  notify "起動しました"
+fi
+
+open "http://localhost:$PORT/index.html"

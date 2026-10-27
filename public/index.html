@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ホーム | Astro学習支援AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-name">Astro学習支援AI</span>
+  </div>
+  <nav class="mainnav" aria-label="ページ切替">
+    <a href="index.html" class="active" aria-current="page">ホーム</a>
+    <a href="roadmap.html">学習の道のり</a>
+    <a href="notebook.html">苦手ノート</a>
+    <a href="glossary.html">用語集</a>
+  </nav>
+</header>
+
+<main class="page">
+  <section class="home-hero">
+    <div class="home-hero__text">
+      <p class="home-hero__greeting" id="home-greeting">おかえりなさい！</p>
+      <p class="home-hero__lead">部品をひとつずつ組み立てて、<br />自分のポートフォリオを完成させましょう。</p>
+    </div>
+    <img class="home-hero__art" src="assets/illust/home-hero.svg" alt="" width="480" height="380" />
+  </section>
+
+  <!-- プロジェクトの置き場所がまだ決まっていないときだけ出る（home.js が出し分ける） -->
+  <section class="home-setup" id="home-setup" hidden>
+    <h2 class="home-setup__title">まず、プロジェクトを作る場所を決めましょう</h2>
+    <p class="home-setup__note">このフォルダの中に、あなたのポートフォリオを作っていきます。<br />
+      まだ無い名前か、空のフォルダを指定してください。必要なものは全部こちらで用意します。</p>
+    <div class="home-setup__row">
+      <button type="button" id="setup-pick-btn" class="btn btn-ghost">フォルダを選ぶ…</button>
+      <input id="setup-dir" class="home-setup__input" type="text" spellcheck="false"
+             autocapitalize="off" autocorrect="off" aria-label="プロジェクトを作る場所" />
+      <button type="button" id="setup-create-btn" class="btn btn-primary">ここに作る</button>
+    </div>
+    <p id="setup-status" class="home-setup__status" hidden></p>
+  </section>
+
+  <div class="hub-cards">
+    <a class="hub-card hub-card--primary" data-target="roadmap" href="roadmap.html">
+      <span class="hub-card__icon"><img src="assets/icons/icon-pin.svg" alt="" /></span>
+      <h2 class="hub-card__title">学習の道のり</h2>
+      <p class="hub-card__preview" id="hub-roadmap-preview">読み込み中…</p>
+    </a>
+    <a class="hub-card hub-card--navy" data-target="progress" href="notebook.html#progress">
+      <span class="hub-card__icon"><img src="assets/icons/icon-barchart.svg" alt="" /></span>
+      <h2 class="hub-card__title">記録・進捗</h2>
+      <p class="hub-card__preview" id="hub-progress-preview">読み込み中…</p>
+    </a>
+    <a class="hub-card" data-target="history" href="notebook.html#history">
+      <span class="hub-card__icon"><img src="assets/icons/icon-clock.svg" alt="" /></span>
+      <h2 class="hub-card__title">さいきんの学習</h2>
+      <p class="hub-card__preview" id="hub-history-preview">読み込み中…</p>
+    </a>
+  </div>
+
+  <!-- デモ用のワンボタンリセット。押し間違いが起きないよう、確認を挟む2段構えにしている
+       （ブラウザの confirm は使わない。画面内で完結させる） -->
+  <section class="home-where" id="home-where" hidden>
+    <span class="home-where__label">作業フォルダ</span>
+    <code class="home-where__path" id="home-where-path"></code>
+    <button type="button" id="home-open-editor" class="btn btn-ghost btn-sm">エディターで開く</button>
+  </section>
+
+  <section class="home-reset">
+    <p class="home-reset__note">デモが終わったら、学習の記録と作ったファイルを最初の状態に戻せます。</p>
+    <button type="button" id="reset-all-btn" class="btn btn-ghost btn-sm">初期状態に戻す</button>
+    <div id="reset-all-confirm" class="home-reset__confirm" hidden>
+      <p class="home-reset__warn">クリア状況・苦手ノート・履歴が消え、<strong>作業フォルダごと削除されます</strong>（中のファイルも全部）。元に戻せません。<br />
+        消したあとは、作る場所を決めるところからやり直しになります。</p>
+      <p class="home-reset__target">消すフォルダ: <code id="reset-target-path"></code></p>
+      <div class="home-reset__btns">
+        <button type="button" id="reset-all-yes" class="btn btn-danger btn-sm">はい、最初から始める</button>
+        <button type="button" id="reset-all-no" class="btn btn-ghost btn-sm">やめる</button>
+      </div>
+    </div>
+    <p id="reset-all-status" class="home-reset__status" hidden></p>
+  </section>
+</main>
+
+<script src="common.js"></script>
+<script src="auth.js"></script>
+<script src="home.js"></script>
+</body>
+</html>

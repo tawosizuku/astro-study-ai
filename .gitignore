@@ -1,0 +1,17 @@
+# 学習の記録（この端末だけのもの。外に出さない）
+data.db
+data.db-*
+memory.json
+session-secret.local
+workspace-path.local
+launcher.log
+exhibit-log.jsonl
+
+# 依存パッケージ
+node_modules/
+_node/
+
+# 依存パッケージのキャッシュ（153MB。無ければ npm install にフォールバックする）
+workspace/_deps/node_modules/
+
+.DS_Store

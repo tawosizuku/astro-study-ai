@@ -1,0 +1,807 @@
+[
+  {
+    "id": "base-1",
+    "phase": "base",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "最初のページをつくる",
+    "concept": "最初の一歩は、ページそのものを作ることから。ファイルは `index.astro` です。\n\nじつは `index.astro` は最初から置いてあります（Astroの初期ページが入っています）。今回はその中身を、自分のページの骨組みに書き換えます。ゼロから新規作成しなくて大丈夫です。\n\n`.astro` って聞くと身構えるかもしれませんが、中身はいつものHTMLとほぼ同じ。拡張子が違うだけです。Astroならではの書き方（変数や部品）は、この先で少しずつ足していきます。\n\nHTMLの骨組みは、どのサイトでもほとんど同じ形です。ここは覚えなくて大丈夫。下のコードをコピーして、`index.astro` の中身をまるごと置き換えてください（コードの右上にコピーボタンがあります）。\n\n```\n<!DOCTYPE html>\n<html lang=\"ja\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>わたしのポートフォリオ</title>\n  </head>\n  <body>\n\n    <header>\n    </header>\n\n    <main>\n      <h1>タイトル</h1>\n    </main>\n\n    <footer>\n    </footer>\n\n  </body>\n</html>\n```\n\n貼ったら、どこが何なのかだけ目を通しておきましょう。\n\n・`<!DOCTYPE html>` … 「これはHTMLの文書です」という宣言。おまじないだと思ってOKです\n・`<head>` … 画面には出ない設定置き場。`<meta charset=\"UTF-8\" />` は文字化け防止、`<title>` はブラウザのタブに出る名前です\n・`<body>` … 実際に画面に出る中身\n・`<header>`・`<main>`・`<footer>` … `<body>` の中を「上・真ん中・下」の3つに分けた箱。中身はこれから少しずつ埋めていきます\n\n`<title>` の中の文字は、好きな名前に変えて構いません。",
+    "steps": [
+      "`src/pages/index.astro` を開く（`src` > `pages` の中にあります）",
+      "もとから入っているAstroの初期ページを**すべて消して**、上のコードをそのまま貼り付ける（コピペでOK）",
+      "`<title>` の中だけ、好きな名前に変えてもOK",
+      "プレビューに「タイトル」と出れば成功"
+    ],
+    "starter": {
+      "files": {
+        "src/pages/index.astro": ""
+      },
+      "newFiles": {}
+    },
+    "checkpoints": [
+      "<!DOCTYPE html> が書かれている",
+      "<meta charset=\"UTF-8\"> が <head> にある",
+      "<title> が書かれている",
+      "<body> の中に <header>・<main>・<footer> がある"
+    ],
+    "targetTags": [
+      "html-structure"
+    ],
+    "answerPatterns": [],
+    "answer": "// src/pages/index.astro\n<!DOCTYPE html>\n<html lang=\"ja\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>わたしのポートフォリオ</title>\n  </head>\n  <body>\n\n    <header>\n    </header>\n\n    <main>\n      <h1>タイトル</h1>\n    </main>\n\n    <footer>\n    </footer>\n\n  </body>\n</html>"
+  },
+  {
+    "id": "base-2",
+    "phase": "base",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "サイト共通のスタイルを用意する",
+    "concept": "まずはサイト全体の見た目のベースを用意します。\n\nといっても、CSSは覚えなくて大丈夫。下のコードをコピーして、`src/styles/global.css` に貼るだけでOKです（右上にコピーボタンがあります）。色やサイズの数字を暗記する必要はありません。\n\n```\n@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&display=swap');\n\n* { margin: 0; padding: 0; box-sizing: border-box; }\n\n:root {\n  --bg: #faf9f7;\n  --surface: #ffffff;\n  --text: #1f1d1b;\n  --text-muted: #6b6560;\n  --accent: #6c5ce7;\n  --accent-dark: #5642d1;\n  --accent-soft: #efebfc;\n  --border: #e7e3de;\n  --font-serif: 'Shippori Mincho', serif;\n  --font-sans: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;\n}\n\nbody {\n  background: var(--bg);\n  color: var(--text);\n  font-family: var(--font-sans);\n  font-size: 16px;\n  line-height: 1.8;\n  -webkit-font-smoothing: antialiased;\n}\nh1, h2, h3 { font-family: var(--font-serif); font-weight: 600; line-height: 1.4; }\na { color: inherit; text-decoration: none; }\na:hover { color: var(--accent); }\nul { list-style: none; }\nimg, svg { display: block; }\n\n/* 何度も使う共通パーツ */\n.c-wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px; }\n.c-eyebrow { display: inline-block; font-size: 12px; letter-spacing: 0.14em; color: var(--accent); font-weight: 600; margin-bottom: 16px; }\n.c-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 28px; border-radius: 4px; font-size: 14px; font-weight: 600; letter-spacing: 0.02em; cursor: pointer; border: 1px solid transparent; }\n.c-btn-primary { background: var(--accent); color: #fff; }\n.c-btn-primary:hover { background: var(--accent-dark); color: #fff; }\n.c-link-arrow { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--text); }\n.c-link-arrow:hover { color: var(--accent); }\n```\n\nクラス名の頭の `c-` は「**c**ommon（共通）」の印です。サイトのあちこちで何度も使うパーツには `c-` を付ける、と決めてあります。こうしておくと、`.c-btn` を見ただけで「これは共通パーツだから、うかつに直すとほかのページにも影響する」と分かります。逆に `c-` が付いていないクラス（このあと出てくる `.hero` や `.work-card` など）は、その部品の中だけのものです。\n\nただ、2つだけ知っておいてほしいことがあります。\n\n1つめ。色やフォントは `:root` の中に `--accent` のような「変数」でまとめてあります。こうしておくと、あとで色を変えたくなったとき、ここ1か所を直すだけでサイト全体の色が変わります。便利ですよ。\n\n2つめ。じつは、貼っただけではこのCSSはまだどのページにも効きません。`index.astro` の先頭で「このCSSを使うよ」と読み込む一手間がいります。ここがこの回の主役で、Astroらしいところです。\n\nその読み込みで、初めての言葉が2つ出てきます。\n\n**フロントマター** は、`.astro` ファイルの一番上を `---` ではさんだ場所のこと。ページを表示する前の「準備」を書くところで、ここに書いた中身は画面には出ません。\n\n**import** は、`import '../styles/global.css'` と書くと「このCSSをこのページで使う」という意味になります。先頭の `../` は「1つ上のフォルダ」のこと。`src/pages/index.astro` から1つ上がった `src/styles/` を指すので、`styles` フォルダは `pages` の中ではなく、`src` のすぐ下に作ってくださいね。",
+    "steps": [
+      "`src/styles/global.css` を新規作成し、上のCSSを**そのまま貼り付ける**（コピペでOK・中身は書き換えなくてよい）。※`styles` フォルダは `pages` の中ではなく **`src` の直下**に作る",
+      "`index.astro` の**一番上**に、次のように `---` を2行とその間の `import` を書き足す（この `---`〜`---` がフロントマター。`import` で global.css を読み込む）:\n```\n---\nimport '../styles/global.css';\n---\n```\nこの3行を、もとの `<!DOCTYPE html>` より上に置く"
+    ],
+    "starter": {
+      "files": {
+        "src/pages/index.astro": "<!DOCTYPE html>\n<html lang=\"ja\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>わたしのポートフォリオ</title>\n  </head>\n  <body>\n    <header></header>\n    <main></main>\n    <footer></footer>\n  </body>\n</html>"
+      },
+      "newFiles": {
+        "src/styles/global.css": "/* 問題文のCSSをここにそのまま貼り付けてください（コピペでOK） */\n"
+      }
+    },
+    "checkpoints": [
+      "src/styles/global.css が作成されている",
+      ":root に --accent・--bg などの色変数と --font-serif が定義されている",
+      "h1,h2,h3 に var(--font-serif)（明朝体）が設定されている",
+      ".c-wrap・.c-eyebrow・.c-btn・.c-link-arrow が定義されている",
+      "index.astro のフロントマターで global.css が import されている"
+    ],
+    "targetTags": [
+      "css"
+    ],
+    "answerPatterns": [],
+    "answer": "// src/styles/global.css\n@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&display=swap');\n\n* { margin: 0; padding: 0; box-sizing: border-box; }\n\n:root {\n  --bg: #faf9f7;\n  --surface: #ffffff;\n  --text: #1f1d1b;\n  --text-muted: #6b6560;\n  --accent: #6c5ce7;\n  --accent-dark: #5642d1;\n  --accent-soft: #efebfc;\n  --border: #e7e3de;\n  --font-serif: 'Shippori Mincho', serif;\n  --font-sans: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;\n}\n\nbody {\n  background: var(--bg);\n  color: var(--text);\n  font-family: var(--font-sans);\n  font-size: 16px;\n  line-height: 1.8;\n  -webkit-font-smoothing: antialiased;\n}\nh1, h2, h3 { font-family: var(--font-serif); font-weight: 600; line-height: 1.4; }\na { color: inherit; text-decoration: none; }\na:hover { color: var(--accent); }\nul { list-style: none; }\nimg, svg { display: block; }\n\n/* 何度も使う共通パーツ */\n.c-wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px; }\n.c-eyebrow { display: inline-block; font-size: 12px; letter-spacing: 0.14em; color: var(--accent); font-weight: 600; margin-bottom: 16px; }\n.c-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 28px; border-radius: 4px; font-size: 14px; font-weight: 600; letter-spacing: 0.02em; cursor: pointer; border: 1px solid transparent; }\n.c-btn-primary { background: var(--accent); color: #fff; }\n.c-btn-primary:hover { background: var(--accent-dark); color: #fff; }\n.c-link-arrow { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--text); }\n.c-link-arrow:hover { color: var(--accent); }\n\n// src/pages/index.astro（先頭にフロントマターを追加して import）\n---\nimport '../styles/global.css';\n---\n<!DOCTYPE html>\n<html lang=\"ja\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>わたしのポートフォリオ</title>\n  </head>\n  <body>\n    <header></header>\n    <main></main>\n    <footer></footer>\n  </body>\n</html>"
+  },
+  {
+    "id": "base-3",
+    "phase": "base",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "変数をつくって画面に表示する",
+    "concept": "前回 `import` を書いた、ファイル先頭の `---`〜`---`（フロントマター）。じつはここ、`import` だけじゃなく JavaScript の変数も書けます。\n\nたとえば `const siteName = 'わたしのポートフォリオ';` と置いておくと、HTMLの中で `{siteName}` と書くだけでその文字が埋め込まれます。同じ言葉を何度も出すときや、あとでまとめて変えたいときに便利です。\n\n今回はサイト名を変数にして、タイトルや見出しに埋め込んでみましょう。",
+    "steps": [
+      "フロントマター（`---`〜`---`）の中に `const siteName = 'わたしのポートフォリオ';` を追加する",
+      "`<title>わたしのポートフォリオ</title>` を `<title>{siteName}</title>` に変える",
+      "`<main>` の中に `<h1>{siteName}</h1>` を追加する"
+    ],
+    "starter": {
+      "files": {
+        "src/pages/index.astro": "---\nimport '../styles/global.css';\n---\n<!DOCTYPE html>\n<html lang=\"ja\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>わたしのポートフォリオ</title>\n  </head>\n  <body>\n    <header></header>\n    <main></main>\n    <footer></footer>\n  </body>\n</html>"
+      },
+      "newFiles": {}
+    },
+    "checkpoints": [
+      "フロントマターに const siteName が定義されている",
+      "<title>{siteName}</title> と書かれている",
+      "HTML の中で {siteName} が使われている"
+    ],
+    "targetTags": [
+      "frontmatter",
+      "template-expression"
+    ],
+    "answerPatterns": [
+      "---",
+      "const siteName",
+      "{siteName}"
+    ],
+    "answer": "// src/pages/index.astro（フロントマターに変数を追加）\n---\nimport '../styles/global.css';\nconst siteName = 'わたしのポートフォリオ';\n---\n<!DOCTYPE html>\n<html lang=\"ja\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>{siteName}</title>\n  </head>\n  <body>\n    <header></header>\n    <main>\n      <h1>{siteName}</h1>\n    </main>\n    <footer></footer>\n  </body>\n</html>"
+  },
+  {
+    "id": "base-4",
+    "phase": "base",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "共通レイアウトを部品にする",
+    "concept": "ここまで `index.astro` に直接書いてきた骨組みを、使い回せる部品 `BaseLayout.astro` に切り出します。ページが増えても、共通の枠を1つ作っておけば中身だけ差し替えればよくなります。\n\nこの回では、Astroの大事なしくみが2つ出てきます。\n\n1つめは **props**。部品に外から値を渡すしくみです。呼ぶ側が `<BaseLayout title=\"わたしのポートフォリオ\">` と渡すと、部品側は `const { title } = Astro.props;` で受け取って `{title}` と使えます。同じ部品を、渡す値を変えて何度でも使い回せます。\n\n2つめは **slot**。部品の中に `<slot />` と書くと、そこが「空き枠」になります。`<BaseLayout>…</BaseLayout>` で囲んだ中身が、まるごとその位置に入ります。propsが短い値を渡すのに対して、slotは中身をまるごと渡せる、というイメージです。\n\n（propsとslotは、上のナビの『用語集』でも例つきで見返せます）",
+    "steps": [
+      "`src/layout/BaseLayout.astro` を新規作成する",
+      "フロントマターに `import '../styles/global.css';` と `const { title } = Astro.props;` を書く",
+      "HTML 骨格（`<!DOCTYPE html>` 〜 `</html>`）を書き、`<title>{title}</title>` にする",
+      "`<body>` の中に `<slot />` だけを置く",
+      "`src/pages/index.astro` を書き直し、BaseLayout を import して `<BaseLayout title=\"わたしのポートフォリオ\">` で囲む（global.css の import は BaseLayout に移したので index からは消す）"
+    ],
+    "starter": {
+      "files": {
+        "src/pages/index.astro": "---\nimport '../styles/global.css';\nconst siteName = 'わたしのポートフォリオ';\n---\n<!DOCTYPE html>\n<html lang=\"ja\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>{siteName}</title>\n  </head>\n  <body>\n    <header></header>\n    <main>\n      <h1>{siteName}</h1>\n    </main>\n    <footer></footer>\n  </body>\n</html>"
+      },
+      "newFiles": {
+        "src/layout/BaseLayout.astro": "<!-- ここに BaseLayout を書く -->\n"
+      }
+    },
+    "checkpoints": [
+      "src/layout/BaseLayout.astro に --- フロントマター --- がある",
+      "BaseLayout の先頭で global.css が import されている",
+      "const { title } = Astro.props; が書かれている",
+      "<title>{title}</title> が書かれている",
+      "<body> の中に <slot /> がある",
+      "src/pages/index.astro で BaseLayout が import・使用されている"
+    ],
+    "targetTags": [
+      "props",
+      "layout-slot",
+      "component-import"
+    ],
+    "answerPatterns": [
+      "Astro.props",
+      "<slot",
+      "import BaseLayout"
+    ],
+    "answer": "// src/layout/BaseLayout.astro\n---\nimport '../styles/global.css';\nconst { title } = Astro.props;\n---\n<!DOCTYPE html>\n<html lang=\"ja\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>{title}</title>\n  </head>\n  <body>\n    <slot />\n  </body>\n</html>\n\n// src/pages/index.astro（BaseLayout を使うよう書き直す）\n---\nimport BaseLayout from '../layout/BaseLayout.astro';\n---\n<BaseLayout title=\"わたしのポートフォリオ\">\n\n  <header></header>\n\n  <main>\n  </main>\n\n  <footer></footer>\n\n</BaseLayout>"
+  },
+  {
+    "id": "header-1",
+    "phase": "header",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "ヘッダーをつくる",
+    "concept": "同じHTMLを何度も書くのは大変。そこでAstroでは、まとまりを「部品（コンポーネント）」として別ファイルに切り出せます。今回は Header を `Header.astro` として独立させます。\n\n`.astro` は、先頭の `---`（フロントマター）が無くても大丈夫。なのでまずは普通のHTMLとして中身だけ書きましょう。\n\n作った部品は、使いたいページで2ステップで呼び出します。まずフロントマターで `import Header from '../components/Header.astro';` と読み込み、次に置きたい場所に `<Header />` と書くだけ。すると、そこに Header.astro の中身がまるごと入ります。\n\nここで3つ、覚えておいてほしいことがあります。\n\n・部品の名前は**大文字で始めます**（`<Header />`）。小文字の `<header>` はただのHTMLタグで、まったくの別物です。import したときの名前と同じにしてください。\n・中身を挟まない部品は、`<Header />` のように**最後に `/` を付けて閉じます**（これを自己完結タグと呼びます）。\n・base-4 の `<BaseLayout>…</BaseLayout>` のように中身を挟みたいときは、開始タグと終了タグに分けます。Header は中身を挟まないので `<Header />` の形になります。\n\n（「コンポーネント」は上のナビの用語集にもまとめてあります）",
+    "steps": [
+      "`src/components/Header.astro` を新規作成する",
+      "`<header class=\"site-header\">` の中に `<div class=\"c-wrap header-inner\">` を置く",
+      "中に `<a href=\"/\" class=\"logo\">Your Name.</a>` と `<nav class=\"main-nav\">` を入れる",
+      "`main-nav` の中に `<a>` でリンクを4つ書く（Home・About・Works・Contact）",
+      "`src/pages/index.astro` のフロントマターで `import Header from '../components/Header.astro';` と読み込み、`<BaseLayout>` の中にある空の `<header></header>` を `<Header />` に差し替える（名前は大文字始まり・中身が無いので末尾に `/`）"
+    ],
+    "starter": {
+      "files": {
+        "src/layout/BaseLayout.astro": "---\nimport '../styles/global.css';\nconst { title } = Astro.props;\n---\n<!DOCTYPE html>\n<html lang=\"ja\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>{title}</title>\n  </head>\n  <body>\n    <slot />\n  </body>\n</html>",
+        "src/pages/index.astro": "---\nimport BaseLayout from '../layout/BaseLayout.astro';\n---\n<BaseLayout title=\"わたしのポートフォリオ\">\n  <header></header>\n  <main></main>\n  <footer></footer>\n</BaseLayout>"
+      },
+      "newFiles": {
+        "src/components/Header.astro": "<!-- ここに Header の HTML を書く -->\n"
+      }
+    },
+    "checkpoints": [
+      "src/components/Header.astro に <header class=\"site-header\"> がある",
+      ".c-wrap.header-inner の中に .logo と <nav class=\"main-nav\"> がある",
+      "main-nav に <a> リンクが4つある",
+      "src/pages/index.astro で Header が import・使用されている"
+    ],
+    "targetTags": [
+      "component-import",
+      "html-structure"
+    ],
+    "answerPatterns": [
+      "site-header",
+      "class=\"logo\"",
+      "main-nav",
+      "import Header"
+    ],
+    "answer": "// src/components/Header.astro\n<header class=\"site-header\">\n  <div class=\"c-wrap header-inner\">\n    <a href=\"/\" class=\"logo\">Your Name.</a>\n    <nav class=\"main-nav\">\n      <a href=\"/#top\">Home</a>\n      <a href=\"/#about\">About</a>\n      <a href=\"/#works\">Works</a>\n      <a href=\"/#contact\">Contact</a>\n    </nav>\n  </div>\n</header>\n\n// src/pages/index.astro（import を追加・<Header /> に差し替え）\n---\nimport BaseLayout from '../layout/BaseLayout.astro';\nimport Header from '../components/Header.astro';\n---\n<BaseLayout title=\"わたしのポートフォリオ\">\n  <Header />\n  <main></main>\n  <footer></footer>\n</BaseLayout>"
+  },
+  {
+    "id": "header-2",
+    "phase": "header",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "ヘッダーの見た目を整える",
+    "concept": "次は Header に見た目を付けます。ここがAstroの気持ちいいところ。\n\n`.astro` の中に書いた `<style>` は、そのファイルの中だけに効きます（スコープ付き、と言います）。他の部品やページには影響しないので、クラス名がぶつかる心配をせずに、気軽に名前を付けられます。\n\nサイト共通の土台は `global.css`、部品ごとの見た目は各ファイルの `<style>` に。そんなふうに使い分けていきます。\n\n今回のCSSは、書き方に正解がひとつではありません。「スクロールしてもヘッダーが上に残る」「ロゴが左・ナビが右に横並び」の見た目になっていればOKです。上に残すには `position: sticky` でも `position: fixed` でも構いません（`fixed` はページの流れから外れるので、あとで下の中身に重なったら余白を足して調整しましょう）。余白や色、フォントは自由に工夫してみてください。\n\n（「スコープ付き <style>」は上のナビの用語集にもまとめてあります）",
+    "steps": [
+      "`Header.astro` の最後に `<style>` タグを追加する",
+      "スクロールしてもヘッダーが画面の上に残るようにする（`position: sticky` や `position: fixed` など）",
+      "ロゴを左、ナビを右に、横一列でそろえる",
+      "ナビのリンクも横に並べる。余白・色・フォントなど、ほかの見た目は自由に整えてOK"
+    ],
+    "starter": {
+      "files": {
+        "src/components/Header.astro": "<header class=\"site-header\">\n  <div class=\"c-wrap header-inner\">\n    <a href=\"/\" class=\"logo\">Your Name.</a>\n    <nav class=\"main-nav\">\n      <a href=\"/#top\">Home</a>\n      <a href=\"/#about\">About</a>\n      <a href=\"/#works\">Works</a>\n      <a href=\"/#contact\">Contact</a>\n    </nav>\n  </div>\n</header>"
+      },
+      "newFiles": {}
+    },
+    "checkpoints": [
+      "<style> タグが Header.astro にある",
+      ".site-header に position: sticky または position: fixed が設定され、スクロールしても上に残る",
+      "ロゴが左、ナビが右に横並びになっている（flex など方法は問わない）",
+      "ナビのリンクが横に並んでいる（細かい数値や書き方は問わない）"
+    ],
+    "targetTags": [
+      "css"
+    ],
+    "answerPatterns": [
+      "position:\\s*(sticky|fixed)",
+      "justify-content:\\s*space-between"
+    ],
+    "answer": "// src/components/Header.astro（<style> を追加）\n<style>\n  .site-header { border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 10; }\n  .header-inner { display: flex; align-items: center; justify-content: space-between; height: 80px; }\n  .logo { font-family: var(--font-serif); font-size: 19px; font-weight: 600; }\n  .main-nav { display: flex; gap: 32px; }\n  .main-nav a { font-size: 14px; letter-spacing: 0.04em; color: var(--text-muted); }\n  .main-nav a:hover { color: var(--accent); }\n</style>"
+  },
+  {
+    "id": "header-3",
+    "phase": "header",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "ナビのリンクをまとめて並べる",
+    "concept": "ナビのリンクを1つずつ手で書いてもいいのですが、数が増えると面倒だし、直すのも大変。そこで「配列」と `map()` の出番です。新しい言葉が多いので、3つに分けて見ていきましょう。\n\n**① フロントマター（`---` と `---` の間）**\n`.astro` ファイルの一番上を `---` で囲むと、そこにJavaScriptを書けます。ここで作った変数は、下のHTMLの中で使えます。\n\n**② 配列とオブジェクトで「リンクの一覧」を作る**\n`[ ]` は「配列」＝ものを順番に並べた入れもの。`{ }` は「オブジェクト」＝名前つきの情報のまとまりです。リンク1本は「表示する文字（label）」と「飛び先（href）」の2つでできているので、1本を `{ label: 'Home', href: '/#top' }` と書き、それを `[ ]` の中に `,` で区切って並べます。\n```\n---\nconst links = [\n  { label: 'Home', href: '/#top' },\n  { label: 'About', href: '/#about' },\n  // …あと2本も同じ形で\n];\n---\n```\n\n**③ `map()` で1本ずつ `<a>` に変える**\n`links.map((link) => …)` は「配列の中身を1つずつ取り出して、`link` という名前で受け取り、`=>` の右側の形に変える」という意味です。HTMLの中でJavaScriptを使うときは `{ }` で囲むのがAstroのルール。だから `href={link.href}` で飛び先を、`{link.label}` で文字を埋め込みます。\n```\n{links.map((link) => <a href={link.href}>{link.label}</a>)}\n```\nこれが4回くり返されて、手で書いた4つの `<a>` と同じものができあがります。データ（中身）と見た目（HTML）を分けられるので、リンクを足したいときは配列に1行足すだけでOKです。\n\nうまく表示されないときは、`,` の付け忘れや、`{ }`・`( )` の閉じ忘れがないか見直してみてください。（`map()` のくわしい話は用語集にもあります）",
+    "steps": [
+      "`Header.astro` の一番上に `---` を2行書き、フロントマターの場所を作る",
+      "その間に `const links = [ ... ];` を書き、`{ label: '表示する文字', href: '飛び先' }` を4本分（Home・About・Works・Contact）`,` で区切って並べる。飛び先は今の `<a>` の `href` をそのまま使う",
+      "`main-nav` の中の4つの `<a>` を消し、代わりに `{links.map((link) => <a href={link.href}>{link.label}</a>)}` の1行を書く",
+      "プレビューで、前と同じ4つのリンクが並んでいれば完成"
+    ],
+    "starter": {
+      "files": {
+        "src/components/Header.astro": "<header class=\"site-header\">\n  <div class=\"c-wrap header-inner\">\n    <a href=\"/\" class=\"logo\">Your Name.</a>\n    <nav class=\"main-nav\">\n      <a href=\"/#top\">Home</a>\n      <a href=\"/#about\">About</a>\n      <a href=\"/#works\">Works</a>\n      <a href=\"/#contact\">Contact</a>\n    </nav>\n  </div>\n</header>\n\n<style>\n  .site-header { border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 10; }\n  .header-inner { display: flex; align-items: center; justify-content: space-between; height: 80px; }\n  .logo { font-family: var(--font-serif); font-size: 19px; font-weight: 600; }\n  .main-nav { display: flex; gap: 32px; }\n  .main-nav a { font-size: 14px; letter-spacing: 0.04em; color: var(--text-muted); }\n  .main-nav a:hover { color: var(--accent); }\n</style>"
+      },
+      "newFiles": {}
+    },
+    "checkpoints": [
+      "フロントマター（---）が Header.astro にある",
+      "links 配列が定義されている",
+      "{links.map(...)} で main-nav の <a> が生成されている",
+      "href と label が {} で埋め込まれている"
+    ],
+    "targetTags": [
+      "frontmatter",
+      "template-expression",
+      "js-basics"
+    ],
+    "answerPatterns": [
+      "const links",
+      "links.map",
+      "link.href"
+    ],
+    "answer": "// src/components/Header.astro（フロントマター追加・map() に変更）\n---\nconst links = [\n  { label: 'Home', href: '/#top' },\n  { label: 'About', href: '/#about' },\n  { label: 'Works', href: '/#works' },\n  { label: 'Contact', href: '/#contact' },\n];\n---\n<header class=\"site-header\">\n  <div class=\"c-wrap header-inner\">\n    <a href=\"/\" class=\"logo\">Your Name.</a>\n    <nav class=\"main-nav\">\n      {links.map((link) => <a href={link.href}>{link.label}</a>)}\n    </nav>\n  </div>\n</header>\n\n<style>\n  .site-header { border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 10; }\n  .header-inner { display: flex; align-items: center; justify-content: space-between; height: 80px; }\n  .logo { font-family: var(--font-serif); font-size: 19px; font-weight: 600; }\n  .main-nav { display: flex; gap: 32px; }\n  .main-nav a { font-size: 14px; letter-spacing: 0.04em; color: var(--text-muted); }\n  .main-nav a:hover { color: var(--accent); }\n</style>"
+  },
+  {
+    "id": "hero-1",
+    "phase": "hero",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "トップの見せ場（Hero）をつくる",
+    "concept": "いよいよ、ページのいちばん上にくる大きな見せ場「Hero」を作ります。\n\nまずはHTMLから。`.c-wrap` で左右の余白をそろえ、その中の `.hero-inner` で読みやすい幅に絞ります。あとはラベル・見出し・説明文・ボタン・スキルタグを並べていきましょう。見た目（CSS）は次の回で付けるので、ここでは中身の組み立てに集中してOKです。",
+    "steps": [
+      "`<main>` の中に `<section class=\"hero\" id=\"top\">` を追加し、中に `<div class=\"c-wrap hero-inner\">` を置く",
+      "`<span class=\"c-eyebrow\">PORTFOLIO</span>`・`<h1>`（キャッチコピー）・`<p class=\"lead\">`（説明文）を書く",
+      "`<div class=\"hero-cta\">` に、`class=\"c-btn c-btn-primary\"` のリンクと `class=\"c-link-arrow\"` のリンクを並べる",
+      "`<div class=\"stack-row\">` に `<span class=\"stack-tag\">` でスキルを書く（HTML・CSS・JavaScript・Astro・Git）"
+    ],
+    "starter": {
+      "files": {
+        "src/pages/index.astro": "---\nimport BaseLayout from '../layout/BaseLayout.astro';\nimport Header from '../components/Header.astro';\n---\n<BaseLayout title=\"わたしのポートフォリオ\">\n  <Header />\n  <main>\n    <!-- ここに Hero を追加 -->\n  </main>\n  <footer></footer>\n</BaseLayout>"
+      },
+      "newFiles": {}
+    },
+    "checkpoints": [
+      "<section class=\"hero\"> が <main> の中にある",
+      ".c-wrap.hero-inner の中に .c-eyebrow・<h1>・.lead がある",
+      ".hero-cta に .c-btn-primary と .c-link-arrow のリンクがある",
+      ".stack-row の中に .stack-tag が複数ある"
+    ],
+    "targetTags": [
+      "html-structure"
+    ],
+    "answerPatterns": [
+      "class=\"hero\"",
+      "hero-inner",
+      "hero-cta",
+      "stack-tag"
+    ],
+    "answer": "// src/pages/index.astro（Hero セクションを追加）\n<main>\n  <section class=\"hero\" id=\"top\">\n    <div class=\"c-wrap hero-inner\">\n      <span class=\"c-eyebrow\">PORTFOLIO</span>\n      <h1>つくりながら、学ぶ。</h1>\n      <p class=\"lead\">Astroでウェブサイトをひとつずつ組み立てながら、考えたことや作ったものを記録していくポートフォリオです。</p>\n      <div class=\"hero-cta\">\n        <a class=\"c-btn c-btn-primary\" href=\"/#works\">Worksを見る</a>\n        <a class=\"c-link-arrow\" href=\"/#about\">About について →</a>\n      </div>\n      <div class=\"stack-row\">\n        <span class=\"stack-tag\">HTML</span>\n        <span class=\"stack-tag\">CSS</span>\n        <span class=\"stack-tag\">JavaScript</span>\n        <span class=\"stack-tag\">Astro</span>\n        <span class=\"stack-tag\">Git</span>\n      </div>\n    </div>\n  </section>\n</main>"
+  },
+  {
+    "id": "hero-2",
+    "phase": "hero",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "Heroの見た目を整える",
+    "concept": "さっき組み立てた Hero に、見た目を付けていきます。\n\n`.c-btn`・`.c-link-arrow`・`.c-wrap` は `global.css`（最初に貼ったデザインシステム）に用意済みなので、ここでは Hero 専用の `.hero`・`.hero-inner`・`.stack-tag` などを、このファイルのスコープ付き `<style>` に書きます。共通の部品は使い回して、固有の見た目だけここで足す、という感覚です。\n\nCSSは、書き方に正解がひとつではありません。手順に出てくるプロパティや数値は一例なので、同じような見た目になっていれば、別の書き方や数値でもOKです。余白・色・大きさは自由に工夫してみてください。",
+    "steps": [
+      "`index.astro` の最後に `<style>` タグを追加する",
+      "Hero の中身を中央寄せにして、上下にたっぷり余白をとる（例: `text-align: center`・`padding`）",
+      "文章が横に広がりすぎないよう `.hero-inner` の幅をしぼって中央に置き、見出し `h1` を大きくする（例: `max-width`・`margin: 0 auto`・`font-size`）",
+      "2つのボタン（`.hero-cta`）を横に並べて中央にそろえる（例: `display: flex`・`gap`・`justify-content`）",
+      "スキルタグ（`.stack-row`）も横に並べ、`.stack-tag` を枠線つきの丸いタグにする（例: `border`・`border-radius`）"
+    ],
+    "starter": {
+      "files": {
+        "src/pages/index.astro": ""
+      },
+      "newFiles": {}
+    },
+    "checkpoints": [
+      "<style> タグが index.astro にある",
+      "Hero の中身が中央寄せで、上下に余白がある（数値は問わない）",
+      ".hero-inner の幅がしぼられて中央に置かれている（方法は問わない）",
+      "ボタンとスキルタグがそれぞれ横に並んでいる（flex など方法は問わない）"
+    ],
+    "targetTags": [
+      "css"
+    ],
+    "answerPatterns": [
+      "text-align:\\s*center",
+      "max-width:\\s*\\d+",
+      "border-radius:\\s*\\d+"
+    ],
+    "answer": "// src/pages/index.astro（Hero のスタイルを <style> に追加）\n<style>\n  .hero { padding: 120px 0 100px; text-align: center; }\n  .hero-inner { max-width: 720px; margin: 0 auto; }\n  .hero h1 { font-size: 48px; margin-bottom: 20px; }\n  .lead { color: var(--text-muted); font-size: 16px; line-height: 1.9; margin-bottom: 36px; }\n  .hero-cta { display: flex; gap: 24px; justify-content: center; align-items: center; margin-bottom: 48px; flex-wrap: wrap; }\n  .stack-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }\n  .stack-tag { font-size: 12px; color: var(--text-muted); border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; }\n\n  @media (max-width: 720px) {\n    .hero { padding: 80px 0 64px; }\n    .hero h1 { font-size: 34px; }\n  }\n</style>"
+  },
+  {
+    "id": "hero-3",
+    "phase": "hero",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "Heroを部品にする",
+    "concept": "同じ Hero を、見出しや説明文だけ変えて使い回せたら便利ですよね。そのために Hero を `Hero.astro` という部品に切り出し、**props** で外から値を受け取れるようにします。props は base-4 の BaseLayout で `title` を渡したときと同じしくみです。ここで、流れをあらためて整理しておきましょう。\n\n**① 部品（コンポーネント）にするとは**\n`src/components/` に `.astro` ファイルを作り、そこに Hero のHTMLを移すことです。`index.astro` からは `import` して `<Hero />` と1行で呼べるようになります。Header.astro を作ったときと同じ手順です。\n\n**② 呼ぶ側：属性の形で値を渡す**\nHTMLの属性（`href=\"...\"` など）と同じ書き方で、好きな名前をつけて値を渡せます。これが props です。\n```\n<Hero name=\"つくりながら、学ぶ。\" tagline=\"説明文がここに入ります。\" />\n```\n`name` や `tagline` は自分で決めた名前で、HTMLにもともとある属性ではありません。\n\n**③ 部品側：`Astro.props` で受け取って使う**\n渡された値は、部品のフロントマターで `Astro.props` から取り出します。\n```\n---\nconst { name, tagline } = Astro.props;\n---\n<h1>{name}</h1>\n```\n`const { name, tagline } = Astro.props;` は「届いた値の中から `name` と `tagline` を取り出して、同じ名前の変数にする」という書き方です。取り出した変数は、base-3 で覚えた `{ }` でHTMLに埋め込みます。\n\n**よくあるつまずき**\n- 呼ぶ側の名前と、受け取る側の名前がずれている（`tagline` と `tagLine` など。大文字小文字も区別されます）\n- `index.astro` で `import Hero from '../components/Hero.astro';` を忘れている\n- Hero専用の `<style>` を index.astro に残したままにしている。スコープ付きなので、Hero.astro の中には効きません。Hero.astro に移しましょう\n\n（props のくわしい話は用語集にもあります）",
+    "steps": [
+      "`src/components/Hero.astro` を新規作成する",
+      "フロントマターに `const { name, tagline } = Astro.props;` を書く",
+      "Hero の HTML を移し、`<h1>` を `{name}`・`.lead` の中身を `{tagline}` に変える",
+      "Hero 専用の `<style>`（`.hero*`・`.stack-tag` など）を Hero.astro に移す（index.astro 側は削除。`.c-btn`・`.c-link-arrow` は共通なので global.css のまま）",
+      "`index.astro` で Hero を import して `<Hero name=\"...\" tagline=\"...\" />` で呼び出す"
+    ],
+    "starter": {
+      "files": {
+        "src/pages/index.astro": ""
+      },
+      "newFiles": {
+        "src/components/Hero.astro": "<!-- ここに Hero コンポーネントを書く -->\n"
+      }
+    },
+    "checkpoints": [
+      "src/components/Hero.astro に Astro.props からの分割代入がある",
+      "{name} と {tagline} が使われている",
+      "src/pages/index.astro で Hero が import・使用されている",
+      "<Hero name=\"...\" tagline=\"...\" /> で呼び出されている"
+    ],
+    "targetTags": [
+      "props",
+      "component-import"
+    ],
+    "answerPatterns": [
+      "Astro.props",
+      "{name}",
+      "{tagline}",
+      "import Hero"
+    ],
+    "answer": "// src/components/Hero.astro\n---\nconst { name, tagline } = Astro.props;\n---\n<section class=\"hero\" id=\"top\">\n  <div class=\"c-wrap hero-inner\">\n    <span class=\"c-eyebrow\">PORTFOLIO</span>\n    <h1>{name}</h1>\n    <p class=\"lead\">{tagline}</p>\n    <div class=\"hero-cta\">\n      <a class=\"c-btn c-btn-primary\" href=\"/#works\">Worksを見る</a>\n      <a class=\"c-link-arrow\" href=\"/#about\">About について →</a>\n    </div>\n    <div class=\"stack-row\">\n      <span class=\"stack-tag\">HTML</span>\n      <span class=\"stack-tag\">CSS</span>\n      <span class=\"stack-tag\">JavaScript</span>\n      <span class=\"stack-tag\">Astro</span>\n      <span class=\"stack-tag\">Git</span>\n    </div>\n  </div>\n</section>\n\n<style>\n  .hero { padding: 120px 0 100px; text-align: center; }\n  .hero-inner { max-width: 720px; margin: 0 auto; }\n  .hero h1 { font-size: 48px; margin-bottom: 20px; }\n  .lead { color: var(--text-muted); font-size: 16px; line-height: 1.9; margin-bottom: 36px; }\n  .hero-cta { display: flex; gap: 24px; justify-content: center; align-items: center; margin-bottom: 48px; flex-wrap: wrap; }\n  .stack-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }\n  .stack-tag { font-size: 12px; color: var(--text-muted); border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; }\n  @media (max-width: 720px) { .hero { padding: 80px 0 64px; } .hero h1 { font-size: 34px; } }\n</style>\n\n// src/pages/index.astro\n---\nimport BaseLayout from '../layout/BaseLayout.astro';\nimport Header from '../components/Header.astro';\nimport Hero from '../components/Hero.astro';\n---\n<BaseLayout title=\"わたしのポートフォリオ\">\n  <Header />\n  <main>\n    <Hero name=\"つくりながら、学ぶ。\" tagline=\"Astroでウェブサイトをひとつずつ組み立てながら、考えたことや作ったものを記録していくポートフォリオです。\" />\n  </main>\n  <footer></footer>\n</BaseLayout>"
+  },
+  {
+    "id": "works-1",
+    "phase": "works",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "作品カードをつくる",
+    "concept": "次は作品を並べる「Works」セクション。\n\n`.section-head` に見出しを置き、`.works-grid` の中にカードを並べます。カード1枚は、サムネ（今回は `<svg>` のアイコン）・タイトル・説明・タグ・リンクで構成します。まずは3枚、手で書いてみましょう（あとでまとめて部品にします）。",
+    "steps": [
+      "Hero の下に `<section class=\"section\" id=\"works\">` を追加し、中に `<div class=\"c-wrap\">` を置く",
+      "`<div class=\"section-head\">` に `<span class=\"c-eyebrow\">WORKS</span>`＋`<h2>つくったもの</h2>` と `<a class=\"c-link-arrow\">` を書く",
+      "`<div class=\"works-grid\">` の中に `<div class=\"work-card\">` を3つ書く",
+      "各カードに `.work-thumb`（SVGアイコン）と `.work-body`（h3・p・`.work-tags`・link-arrow）を入れる"
+    ],
+    "starter": {
+      "files": {
+        "src/pages/index.astro": "---\nimport BaseLayout from '../layout/BaseLayout.astro';\nimport Header from '../components/Header.astro';\nimport Hero from '../components/Hero.astro';\n---\n<BaseLayout title=\"わたしのポートフォリオ\">\n  <Header />\n  <main>\n    <Hero name=\"あなたの名前\" tagline=\"つくることを、たのしむ人。\" />\n    <!-- ここに Works セクションを追加 -->\n  </main>\n  <footer></footer>\n</BaseLayout>"
+      },
+      "newFiles": {}
+    },
+    "checkpoints": [
+      "<section ... id=\"works\"> と .section-head がある",
+      ".works-grid の中に .work-card が3つある",
+      "各カードに .work-thumb と .work-body がある",
+      ".work-body に h3・p・.work-tags がある"
+    ],
+    "targetTags": [
+      "html-structure"
+    ],
+    "answerPatterns": [
+      "id=\"works\"",
+      "work-card",
+      "work-thumb",
+      "work-tags"
+    ],
+    "answer": "// src/pages/index.astro（Works セクションを追加）\n<section class=\"section\" id=\"works\">\n  <div class=\"c-wrap\">\n    <div class=\"section-head\">\n      <div>\n        <span class=\"c-eyebrow\">WORKS</span>\n        <h2>つくったもの</h2>\n      </div>\n      <a class=\"c-link-arrow\" href=\"/#works\">すべて見る →</a>\n    </div>\n    <div class=\"works-grid\">\n      <div class=\"work-card\">\n        <div class=\"work-thumb\"><svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M3 8h18\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg></div>\n        <div class=\"work-body\">\n          <h3>プロジェクト名 01</h3>\n          <p>作品の簡単な説明がここに入ります。</p>\n          <div class=\"work-tags\"><span>HTML</span><span>CSS</span></div>\n          <a class=\"c-link-arrow\" href=\"#\">詳しく見る →</a>\n        </div>\n      </div>\n      <div class=\"work-card\">\n        <div class=\"work-thumb\"><svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M3 8h18\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg></div>\n        <div class=\"work-body\">\n          <h3>プロジェクト名 02</h3>\n          <p>作品の簡単な説明がここに入ります。</p>\n          <div class=\"work-tags\"><span>JavaScript</span></div>\n          <a class=\"c-link-arrow\" href=\"#\">詳しく見る →</a>\n        </div>\n      </div>\n      <div class=\"work-card\">\n        <div class=\"work-thumb\"><svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M3 8h18\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg></div>\n        <div class=\"work-body\">\n          <h3>プロジェクト名 03</h3>\n          <p>作品の簡単な説明がここに入ります。</p>\n          <div class=\"work-tags\"><span>HTML</span><span>CSS</span></div>\n          <a class=\"c-link-arrow\" href=\"#\">詳しく見る →</a>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>"
+  },
+  {
+    "id": "works-2",
+    "phase": "works",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "作品一覧の見た目を整える",
+    "concept": "並べたカードを、きれいな格子状（グリッド）に整えます。\n\nおすすめは CSS Grid。たとえば `grid-template-columns: repeat(3, minmax(0, 1fr))` と書くと、均等な3列になります。サムネは `aspect-ratio` で縦横比を固定しておくと、中身が変わっても形が崩れません。\n\nCSSは、書き方に正解がひとつではありません。手順に出てくるプロパティや数値は一例なので、同じような見た目になっていれば、別の書き方や数値でもOKです。余白・色・大きさは自由に工夫してみてください。",
+    "steps": [
+      "`index.astro` の `<style>` に、作品一覧まわり（`.section`・`.section-head`・`.works-grid`・`.work-card` など）のスタイルを追加する",
+      "`.works-grid` でカードを横に3列（目安）に並べ、カードどうしにすきまをあける（例: `display: grid`・`grid-template-columns`・`gap`。flex でもOK）",
+      "`.work-card` を枠線つきのカードにし、角を少し丸める（例: `border`・`border-radius`・`overflow: hidden`）",
+      "`.work-thumb` の縦横比をそろえて色を付け、`.work-body` に内側の余白をとる。`.work-tags span` は丸タグにする"
+    ],
+    "starter": {
+      "files": {
+        "src/pages/index.astro": ""
+      },
+      "newFiles": {}
+    },
+    "checkpoints": [
+      "カードが横に複数列で並んでいる（grid でも flex でもよい・列数や数値は問わない）",
+      "カードに枠線か背景があり、カードとして区切られて見える",
+      ".work-thumb の大きさ（縦横比や高さ）がそろっている",
+      "カードの中身に内側の余白がある"
+    ],
+    "targetTags": [
+      "css"
+    ],
+    "answerPatterns": [
+      "grid-template-columns",
+      "aspect-ratio"
+    ],
+    "answer": "// src/pages/index.astro の <style> に追加\n.section { padding: 100px 0; }\n.section-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 48px; gap: 24px; flex-wrap: wrap; }\n.section-head h2 { font-size: 32px; }\n.works-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }\n.work-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; }\n.work-thumb { aspect-ratio: 4 / 3; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; color: var(--accent); }\n.work-body { padding: 22px; display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }\n.work-body h3 { font-size: 18px; }\n.work-body p { color: var(--text-muted); font-size: 14px; line-height: 1.7; }\n.work-tags { display: flex; gap: 8px; flex-wrap: wrap; }\n.work-tags span { font-size: 11px; color: var(--text-muted); border: 1px solid var(--border); border-radius: 999px; padding: 4px 10px; }\n\n@media (max-width: 720px) {\n  .works-grid { grid-template-columns: 1fr; }\n}"
+  },
+  {
+    "id": "works-3",
+    "phase": "works",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "作品カードを部品にしてまとめる",
+    "concept": "さっき手で書いた3枚のカード、よく見ると形は同じで中身だけ違いますよね。こういうときこそ、これまでに覚えた「部品＋props」（hero-3）と「配列＋`map()`」（header-3）の合わせ技です。一覧を作るときの、Astroの定番パターンです。\n\n**① カード1枚分を部品にする（Card.astro）**\nタイトル・説明・タグ・リンク先を props で受け取る部品を作ります。タグは「文字のリスト（配列）」なので、部品の中でも `map()` で `<span>` に変えます。\n```\n---\nconst { title, description, tags, href } = Astro.props;\n---\n<h3>{title}</h3>\n<div class=\"work-tags\">\n  {tags.map((t) => <span>{t}</span>)}\n</div>\n```\n\n**② 作品のデータを配列にする（index.astro のフロントマター）**\nカード1枚分を `{ }`（オブジェクト）にまとめ、`[ ]` で並べます。項目の名前は、Card が受け取る props の名前とそろえておきます。\n```\nconst works = [\n  { title: 'プロジェクト名 01', description: '説明', tags: ['HTML', 'CSS'], href: '#' },\n  // …あと2件も同じ形で\n];\n```\n\n**③ `map()` で1件ずつ Card にする**\n```\n{works.map((w) => <Card {...w} />)}\n```\n`{...w}` は新しい書き方で、「`w` の中身を全部、同じ名前の props としてまとめて渡す」という意味です。`<Card title={w.title} description={w.description} tags={w.tags} href={w.href} />` と1つずつ書くのと同じ結果になります。長く感じたら、こちらの書き方でもOKです。\n\n**よくあるつまずき**\n- 配列の項目名（`title` など）と、Card の `Astro.props` で取り出す名前がずれている\n- `tags` を `['HTML', 'CSS']` のような配列にしていない（文字だけだと `tags.map` でエラーになります）\n- カードのCSSを index.astro に残している。Card.astro の中には効かないので、Card.astro に移しましょう\n\n（map も props も用語集にあります）",
+    "steps": [
+      "`src/components/Card.astro` を新規作成し、`const { title, description, tags, href } = Astro.props;` を書く",
+      "`Card.astro` でカード1枚分の HTML と `<style>` を書く（`tags.map((t) => <span>{t}</span>)` でタグを展開）",
+      "`index.astro` のフロントマターに `works` 配列を定義する",
+      "`Card` を import して `{works.map((w) => <Card {...w} />)}` で3枚のカードを置き換える",
+      "`index.astro` の `<style>` から `.work-card`〜`.work-tags span` を削除する（Card.astro に移したため。`.section`・`.section-head`・`.works-grid` は残す）"
+    ],
+    "starter": {
+      "files": {},
+      "newFiles": {
+        "src/components/Card.astro": "<!-- ここに Card コンポーネントを書く -->\n"
+      }
+    },
+    "checkpoints": [
+      "Card.astro に Astro.props からの分割代入がある",
+      "{title}・{description} が使われている",
+      "tags.map() でタグが展開されている",
+      "index.astro に works 配列が定義されている",
+      "works.map() と <Card {...w} /> が使われている"
+    ],
+    "targetTags": [
+      "props",
+      "template-expression",
+      "component-import"
+    ],
+    "answerPatterns": [
+      "Astro.props",
+      "tags.map",
+      "works.map",
+      "import Card"
+    ],
+    "answer": "// src/components/Card.astro\n---\nconst { title, description, tags, href } = Astro.props;\n---\n<div class=\"work-card\">\n  <div class=\"work-thumb\"><svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M3 8h18\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg></div>\n  <div class=\"work-body\">\n    <h3>{title}</h3>\n    <p>{description}</p>\n    <div class=\"work-tags\">\n      {tags.map((t) => <span>{t}</span>)}\n    </div>\n    <a class=\"c-link-arrow\" href={href}>詳しく見る →</a>\n  </div>\n</div>\n\n<style>\n  .work-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; }\n  .work-thumb { aspect-ratio: 4 / 3; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; color: var(--accent); }\n  .work-body { padding: 22px; display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }\n  .work-body h3 { font-size: 18px; }\n  .work-body p { color: var(--text-muted); font-size: 14px; line-height: 1.7; }\n  .work-tags { display: flex; gap: 8px; flex-wrap: wrap; }\n  .work-tags span { font-size: 11px; color: var(--text-muted); border: 1px solid var(--border); border-radius: 999px; padding: 4px 10px; }\n</style>\n\n// src/pages/index.astro\n---\nimport BaseLayout from '../layout/BaseLayout.astro';\nimport Header from '../components/Header.astro';\nimport Hero from '../components/Hero.astro';\nimport Card from '../components/Card.astro';\n\nconst works = [\n  { title: 'プロジェクト名 01', description: '作品の簡単な説明がここに入ります。', tags: ['HTML', 'CSS'], href: '#' },\n  { title: 'プロジェクト名 02', description: '作品の簡単な説明がここに入ります。', tags: ['JavaScript'], href: '#' },\n  { title: 'プロジェクト名 03', description: '作品の簡単な説明がここに入ります。', tags: ['HTML', 'CSS'], href: '#' },\n];\n---\n<BaseLayout title=\"わたしのポートフォリオ\">\n  <Header />\n  <main>\n    <Hero name=\"つくりながら、学ぶ。\" tagline=\"Astroでウェブサイトをひとつずつ組み立てながら、考えたことや作ったものを記録していくポートフォリオです。\" />\n    <section class=\"section\" id=\"works\">\n      <div class=\"c-wrap\">\n        <div class=\"section-head\">\n          <div>\n            <span class=\"c-eyebrow\">WORKS</span>\n            <h2>つくったもの</h2>\n          </div>\n          <a class=\"c-link-arrow\" href=\"/#works\">すべて見る →</a>\n        </div>\n        <div class=\"works-grid\">\n          {works.map((w) => <Card {...w} />)}\n        </div>\n      </div>\n    </section>\n  </main>\n  <footer></footer>\n</BaseLayout>"
+  },
+  {
+    "id": "rest-1",
+    "phase": "rest",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "残りのセクションをつくる",
+    "concept": "ポートフォリオの残りのセクションを、ここで一気に作ります。Copy帯・About（自己紹介とスキル）・CTA帯・Contact（お問い合わせフォーム）の4つです。\n\nアイコンは `<svg>` をそのまま書き込みます。Footer だけは次の回で部品にするので、ここではまだ普通に書いておいてOKです。",
+    "steps": [
+      "Works の下に `<section class=\"copy-section\">` を追加し、`.c-wrap.copy-inner` に見出しを書く",
+      "`<section class=\"section\" id=\"about\">` に `.about-inner`（似顔絵SVG＋自己紹介）と `.skills-row`（`.skill-pill`）を書く",
+      "`<section class=\"cta-band\">` に見出し・説明・`.c-btn-primary` ボタンを書く",
+      "`<section class=\"section\" id=\"contact\">` に `.contact-grid`（連絡先 `.info-row` と `<form>`）を書く"
+    ],
+    "starter": {
+      "files": {
+        "src/pages/index.astro": ""
+      },
+      "newFiles": {}
+    },
+    "checkpoints": [
+      "<section class=\"copy-section\"> がある",
+      "<section id=\"about\"> に .about-inner と .skills-row がある",
+      "<section class=\"cta-band\"> がある",
+      "<section id=\"contact\"> に .contact-grid と <form> がある"
+    ],
+    "targetTags": [
+      "html-structure"
+    ],
+    "answerPatterns": [
+      "copy-section",
+      "id=\"about\"",
+      "cta-band",
+      "contact-grid"
+    ],
+    "answer": "// src/pages/index.astro（残りのセクションを Works の下に追加）\n\n<section class=\"copy-section\">\n  <div class=\"c-wrap copy-inner\">\n    <h2>手を動かした分だけ、<br>理解は深くなる。</h2>\n  </div>\n</section>\n\n<section class=\"section\" id=\"about\">\n  <div class=\"c-wrap\">\n    <div class=\"about-inner\">\n      <div class=\"about-portrait\"><svg width=\"56\" height=\"56\" viewBox=\"0 0 24 24\" fill=\"none\"><circle cx=\"12\" cy=\"8\" r=\"4\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M4 20c0-4 3.5-6 8-6s8 2 8 6\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"/></svg></div>\n      <div>\n        <span class=\"c-eyebrow\">ABOUT</span>\n        <h2>Your Name</h2>\n        <p class=\"about-bio\">普段は別の分野を学びつつ、空いた時間にAstroでこのポートフォリオサイトを組み立てています。小さな部品(コンポーネント)を一つずつ理解しながら、実際に手を動かして形にしていくことを大事にしています。</p>\n      </div>\n    </div>\n    <div class=\"section-head\">\n      <div>\n        <span class=\"c-eyebrow\">SKILL</span>\n        <h2>できること</h2>\n      </div>\n    </div>\n    <div class=\"skills-row\">\n      <span class=\"skill-pill\">HTML</span>\n      <span class=\"skill-pill\">CSS</span>\n      <span class=\"skill-pill\">JavaScript</span>\n      <span class=\"skill-pill\">Astro</span>\n      <span class=\"skill-pill\">Git / GitHub</span>\n      <span class=\"skill-pill\">Figma</span>\n    </div>\n  </div>\n</section>\n\n<section class=\"cta-band\">\n  <div class=\"c-wrap\">\n    <h2>話してみませんか?</h2>\n    <p>感想やご質問、お仕事のご相談など、お気軽にご連絡ください。</p>\n    <a class=\"c-btn c-btn-primary\" href=\"/#contact\">Contactへ</a>\n  </div>\n</section>\n\n<section class=\"section\" id=\"contact\">\n  <div class=\"c-wrap\">\n    <div class=\"section-head\">\n      <div>\n        <span class=\"c-eyebrow\">CONTACT</span>\n        <h2>お問い合わせ</h2>\n      </div>\n    </div>\n    <div class=\"contact-grid\">\n      <div class=\"contact-info\">\n        <div class=\"info-row\">\n          <div class=\"info-icon\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M4 7l8 6 8-6\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></div>\n          <div>\n            <div class=\"info-label\">Mail</div>\n            <div class=\"info-value\">you@example.com</div>\n          </div>\n        </div>\n        <div class=\"info-row\">\n          <div class=\"info-icon\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"M8 6L3 12L8 18M16 6L21 12L16 18\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></div>\n          <div>\n            <div class=\"info-label\">GitHub</div>\n            <div class=\"info-value\">github.com/yourname</div>\n          </div>\n        </div>\n      </div>\n      <form class=\"contact-form\">\n        <div class=\"form-row\">\n          <label for=\"name\">お名前</label>\n          <input class=\"form-field\" id=\"name\" type=\"text\" placeholder=\"山田 太郎\" />\n        </div>\n        <div class=\"form-row\">\n          <label for=\"email\">メールアドレス</label>\n          <input class=\"form-field\" id=\"email\" type=\"email\" placeholder=\"you@example.com\" />\n        </div>\n        <div class=\"form-row\">\n          <label for=\"message\">メッセージ</label>\n          <textarea class=\"form-field\" id=\"message\" placeholder=\"お問い合わせ内容をご記入ください。\"></textarea>\n        </div>\n        <button class=\"c-btn c-btn-primary form-submit\" type=\"submit\">送信する</button>\n      </form>\n    </div>\n  </div>\n</section>"
+  },
+  {
+    "id": "rest-2",
+    "phase": "rest",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "残りのセクションの見た目を整える",
+    "concept": "追加した4つのセクションに、見た目を付けていきます。\n\n`.copy-section` は `var(--accent-soft)` の色帯に、About と Contact は `.about-inner`・`.contact-grid` で2カラムに。フォームの入力欄は `.form-field` でまとめて整えます。ここも、共通の部品を使いながら固有の見た目を足していく流れです。\n\nCSSは、書き方に正解がひとつではありません。手順に出てくるプロパティや数値は一例なので、同じような見た目になっていれば、別の書き方や数値でもOKです。余白・色・大きさは自由に工夫してみてください。",
+    "steps": [
+      "`.copy-section` に背景色の帯を付けて上下に余白をとり、中の文章を中央寄せにする（例: `background: var(--accent-soft)`・`padding`）",
+      "About の `.about-inner` を、写真と文章の横並び（2カラム）にする。`.skill-pill` は丸タグにする（例: `display: flex`・`gap`）",
+      "`.cta-band` の中身を中央寄せにする",
+      "Contact の `.contact-grid` を、左に説明・右にフォームの2カラムにし、`.form-field` の入力欄に枠線と余白を付ける（例: `display: grid`・`grid-template-columns`）"
+    ],
+    "starter": {
+      "files": {
+        "src/pages/index.astro": ""
+      },
+      "newFiles": {}
+    },
+    "checkpoints": [
+      ".copy-section に背景色が付いて、帯のように見える（色は問わない）",
+      "About が2カラム（横並び）になっている（flex・grid など方法は問わない）",
+      "Contact が2カラムになっている（方法・幅の数値は問わない）",
+      ".form-field の入力欄にスタイル（枠線や余白など）が付いている"
+    ],
+    "targetTags": [
+      "css"
+    ],
+    "answerPatterns": [
+      "background:\\s*var\\(--accent-soft\\)",
+      "grid-template-columns"
+    ],
+    "answer": "// src/pages/index.astro の <style> に追加\n.copy-section { padding: 80px 0; background: var(--accent-soft); }\n.copy-inner { max-width: 600px; margin: 0 auto; text-align: center; }\n.copy-inner h2 { font-size: 28px; line-height: 1.6; }\n\n.about-inner { display: flex; gap: 48px; align-items: center; margin-bottom: 64px; }\n.about-portrait { width: 160px; height: 160px; flex-shrink: 0; border-radius: 8px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; color: var(--accent); }\n.about-inner h2 { font-size: 28px; margin: 8px 0 12px; }\n.about-bio { color: var(--text-muted); font-size: 15px; line-height: 1.9; max-width: 520px; }\n.skills-row { display: flex; gap: 12px; flex-wrap: wrap; }\n.skill-pill { font-size: 14px; border: 1px solid var(--border); border-radius: 999px; padding: 9px 18px; }\n\n.cta-band { padding: 90px 0; text-align: center; }\n.cta-band h2 { font-size: 28px; margin-bottom: 14px; }\n.cta-band p { color: var(--text-muted); margin-bottom: 32px; }\n\n.contact-grid { display: grid; grid-template-columns: 280px 1fr; gap: 48px; }\n.contact-info { display: flex; flex-direction: column; gap: 20px; }\n.info-row { display: flex; align-items: center; gap: 14px; padding: 18px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }\n.info-icon { width: 36px; height: 36px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }\n.info-label { font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }\n.info-value { font-size: 14px; }\n.contact-form { display: flex; flex-direction: column; gap: 20px; }\n.form-row { display: flex; flex-direction: column; gap: 8px; }\n.form-row label { font-size: 13px; color: var(--text-muted); }\n.form-field { border: 1px solid var(--border); border-radius: 4px; background: var(--surface); padding: 12px 14px; font-size: 14px; color: var(--text); font-family: var(--font-sans); width: 100%; }\ntextarea.form-field { min-height: 110px; resize: none; }\n.form-submit { align-self: flex-start; margin-top: 4px; }\n\n@media (max-width: 720px) {\n  .about-inner { flex-direction: column; text-align: center; }\n  .contact-grid { grid-template-columns: 1fr; }\n}"
+  },
+  {
+    "id": "rest-3",
+    "phase": "rest",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "フッターを仕上げる",
+    "concept": "いよいよ最後のステップ！Footer を `Footer.astro` に切り出して、`BaseLayout` に組み込みます。ロゴ・ひとことのタグライン・SNSアイコン・リンクが並ぶ、しっかりしたフッターです。\n\nここでのポイントは、Footer を「ページ」ではなく「レイアウト」の中に置くことです。\n\n**① なぜ BaseLayout に置くのか**\nHeader はページごとに `<Header />` と書いてきましたが、フッターはどのページでも同じものを一番下に出したいですよね。BaseLayout はすべてのページを包む共通の枠なので、ここに1回書けば、全部のページに自動でフッターが付きます。\n\n**② `<slot />` の下に置く**\nbase-4 で覚えたとおり、`<slot />` は「各ページの中身が入る空き枠」です。その下に `<Footer />` を書けば、「ページの中身 → フッター」の順に並びます。\n```\n<body>\n  <slot />\n  <Footer />\n</body>\n```\n部品の中で別の部品を使うときも、やり方は同じです。BaseLayout のフロントマターで `import` してから呼び出します。BaseLayout は `src/layout/` にあるので、パスは `'../components/Footer.astro'` になります。\n\n**よくあるつまずき**\n- `index.astro` に古い `<footer>` が残っていて、フッターが2つ出る\n- import を BaseLayout ではなく index.astro に書いてしまっている\n\nこれで全部そろいます。最後に、名前や作品名を自分のものに書き換えて、あなただけのポートフォリオに仕上げましょう。おつかれさまでした！",
+    "steps": [
+      "`src/components/Footer.astro` を新規作成し、`<footer class=\"site-footer\">` の HTML（ロゴ・タグライン・SNS・リンク・著作権）と `<style>` を書く",
+      "`src/layout/BaseLayout.astro` で Footer を import する",
+      "BaseLayout の `<slot />` の下に `<Footer />` を追加する",
+      "`src/pages/index.astro` に古い `<footer>` が残っていれば削除する"
+    ],
+    "starter": {
+      "files": {
+        "src/layout/BaseLayout.astro": "",
+        "src/pages/index.astro": ""
+      },
+      "newFiles": {
+        "src/components/Footer.astro": "<!-- ここに Footer コンポーネントを書く -->\n"
+      }
+    },
+    "checkpoints": [
+      "Footer.astro に <footer class=\"site-footer\"> が書かれている",
+      "Footer.astro に .footer-top・.footer-links・著作権表示がある",
+      "Footer.astro に <style> がある",
+      "BaseLayout.astro で Footer が import・使用されている"
+    ],
+    "targetTags": [
+      "component-import",
+      "layout-slot"
+    ],
+    "answerPatterns": [
+      "site-footer",
+      "footer-links",
+      "import Footer",
+      "<Footer"
+    ],
+    "answer": "// src/components/Footer.astro\n<footer class=\"site-footer\">\n  <div class=\"c-wrap\">\n    <div class=\"footer-top\">\n      <div>\n        <a class=\"logo\" href=\"/#top\">Your Name.</a>\n        <p class=\"footer-tagline\">Astroで学びながらつくる、個人のポートフォリオサイトです。</p>\n        <div class=\"social-row\">\n          <a class=\"social-btn\" href=\"#\" aria-label=\"Mail\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M4 7l8 6 8-6\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a>\n          <a class=\"social-btn\" href=\"#\" aria-label=\"Code\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\"><path d=\"M8 6L3 12L8 18M16 6L21 12L16 18\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a>\n        </div>\n      </div>\n      <nav class=\"footer-links\">\n        <a href=\"/#top\">Home</a>\n        <a href=\"/#about\">About</a>\n        <a href=\"/#works\">Works</a>\n        <a href=\"/#contact\">Contact</a>\n      </nav>\n    </div>\n    <div class=\"footer-bottom\">© 2026 Your Name. All rights reserved.</div>\n  </div>\n</footer>\n\n<style>\n  .site-footer { border-top: 1px solid var(--border); padding: 56px 0 28px; }\n  .footer-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; margin-bottom: 40px; flex-wrap: wrap; }\n  .footer-tagline { color: var(--text-muted); font-size: 14px; margin-top: 8px; max-width: 300px; }\n  .footer-links { display: flex; gap: 28px; }\n  .footer-links a { font-size: 14px; color: var(--text-muted); }\n  .social-row { display: flex; gap: 12px; margin-top: 18px; }\n  .social-btn { width: 34px; height: 34px; border: 1px solid var(--border); border-radius: 999px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }\n  .social-btn:hover { border-color: var(--accent); color: var(--accent); }\n  .footer-bottom { border-top: 1px solid var(--border); padding-top: 20px; text-align: center; font-size: 12px; color: var(--text-muted); }\n</style>\n\n// src/layout/BaseLayout.astro（Footer を追加）\n---\nimport '../styles/global.css';\nimport Footer from '../components/Footer.astro';\nconst { title } = Astro.props;\n---\n<!DOCTYPE html>\n<html lang=\"ja\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>{title}</title>\n  </head>\n  <body>\n    <slot />\n    <Footer />\n  </body>\n</html>"
+  },
+  {
+    "id": "interact-1",
+    "phase": "interact",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "スマホ用メニューに動きをつける",
+    "concept": "ここからは「動き」を足します。Astro では `.astro` に `<script>` を書くと、その JavaScript がブラウザで動きます。\n\nAstro は、必要なところだけJSを動かす考え方で、これを「島（islands）」と呼びます。React などを島として動かす `client:*` という書き方もありますが、ボタンの開け閉めくらいなら素の `<script>` で十分。今回はスマホ用の、メニューを開け閉めするボタンを作ります。\n\nしくみは「ボタンを押したら `.site-header` に `is-open` という目印のクラスを付けたり外したりして、CSSでその目印があるときだけナビを見せる」です。JavaScriptがすることは、目印の付け外しだけ。見せる・隠すはCSSにまかせます。\n\n**① 要素をつかまえる：`document.querySelector`**\nCSSのセレクタと同じ書き方で、ページの中から要素を1つ取り出します。\n```\nconst box = document.querySelector('.box');\n```\n\n**② 押されたら動く：`addEventListener('click', …)`**\n「この要素がクリックされたら、`=>` の右側（`{ }` の中）を実行してね」と予約しておく書き方です。\n\n**③ 目印を付け外しする：`classList.toggle`**\n`classList.toggle('is-open')` は、クラスが無ければ付けて、あれば外します。付けたら `true`、外したら `false` が返ってくるので、それを `aria-expanded`（読み上げソフトに「いま開いているか」を伝える属性）に入れておくと親切です。\n```\nbutton.addEventListener('click', () => {\n  const opened = box.classList.toggle('is-open');\n});\n```\n（形を見せるための別の例です。今回の要素名に置きかえて使ってください）\n\n**④ CSSで見せ方を切り替える**\n`.site-header.is-open .main-nav` は「`is-open` が付いた `.site-header` の中の `.main-nav`」という意味です。ふだんは隠しておき、目印があるときだけ表示します。\n\n**よくあるつまずき**\n- 確かめるときは、プレビューの幅を狭くする必要があります。広い画面ではボタンが出ません\n- `querySelector` の中の `.` を忘れる（`'site-header'` ではなく `'.site-header'`）",
+    "steps": [
+      "`Header.astro` の `.logo` の後に `<button class=\"nav-toggle\" aria-label=\"メニュー\" aria-expanded=\"false\">☰</button>` を追加する",
+      "ファイルに `<script>` を追加し、ボタンの `click` で `.site-header` に `is-open` クラスをトグルする（`aria-expanded` も切り替える）",
+      "`<style>` で、`.nav-toggle` をふだんは隠しておき、狭い画面（例: `@media (max-width: 720px)`）ではボタンを表示して `.main-nav` を隠す。`.site-header.is-open .main-nav` のときはナビを表示する（区切りの幅や見せ方は自由）"
+    ],
+    "starter": {
+      "files": {
+        "src/components/Header.astro": "---\nconst links = [\n  { label: 'Home', href: '/#top' },\n  { label: 'About', href: '/#about' },\n  { label: 'Works', href: '/#works' },\n  { label: 'Contact', href: '/#contact' },\n];\n---\n<header class=\"site-header\">\n  <div class=\"c-wrap header-inner\">\n    <a href=\"/\" class=\"logo\">Your Name.</a>\n    <nav class=\"main-nav\">\n      {links.map((link) => <a href={link.href}>{link.label}</a>)}\n    </nav>\n  </div>\n</header>\n\n<style>\n  .site-header { border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 10; }\n  .header-inner { display: flex; align-items: center; justify-content: space-between; height: 80px; }\n  .logo { font-family: var(--font-serif); font-size: 19px; font-weight: 600; }\n  .main-nav { display: flex; gap: 32px; }\n  .main-nav a { font-size: 14px; letter-spacing: 0.04em; color: var(--text-muted); }\n  .main-nav a:hover { color: var(--accent); }\n</style>"
+      },
+      "newFiles": {}
+    },
+    "checkpoints": [
+      "Header.astro に <button class=\"nav-toggle\"> がある",
+      "<script> が Header.astro にある",
+      "click で .site-header に is-open クラスをトグルしている",
+      "狭い画面で .main-nav を隠し、is-open のとき表示する CSS がある（区切りの幅や見せ方は問わない）"
+    ],
+    "targetTags": [
+      "js-basics",
+      "astro-syntax-other"
+    ],
+    "answerPatterns": [
+      "nav-toggle",
+      "addEventListener",
+      "classList.toggle",
+      "is-open"
+    ],
+    "answer": "// src/components/Header.astro（ボタン・script・モバイルCSSを追加）\n---\nconst links = [\n  { label: 'Home', href: '/#top' },\n  { label: 'About', href: '/#about' },\n  { label: 'Works', href: '/#works' },\n  { label: 'Contact', href: '/#contact' },\n];\n---\n<header class=\"site-header\">\n  <div class=\"c-wrap header-inner\">\n    <a href=\"/\" class=\"logo\">Your Name.</a>\n    <button class=\"nav-toggle\" aria-label=\"メニュー\" aria-expanded=\"false\">☰</button>\n    <nav class=\"main-nav\">\n      {links.map((link) => <a href={link.href}>{link.label}</a>)}\n    </nav>\n  </div>\n</header>\n\n<script>\n  const header = document.querySelector('.site-header');\n  const toggle = document.querySelector('.nav-toggle');\n  toggle.addEventListener('click', () => {\n    const open = header.classList.toggle('is-open');\n    toggle.setAttribute('aria-expanded', String(open));\n  });\n</script>\n\n<style>\n  .site-header { border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 10; }\n  .header-inner { display: flex; align-items: center; justify-content: space-between; height: 80px; }\n  .logo { font-family: var(--font-serif); font-size: 19px; font-weight: 600; }\n  .main-nav { display: flex; gap: 32px; }\n  .main-nav a { font-size: 14px; letter-spacing: 0.04em; color: var(--text-muted); }\n  .main-nav a:hover { color: var(--accent); }\n  .nav-toggle { display: none; background: none; border: none; font-size: 22px; line-height: 1; cursor: pointer; }\n\n  @media (max-width: 720px) {\n    .nav-toggle { display: block; }\n    .main-nav { display: none; width: 100%; flex-direction: column; gap: 12px; padding-bottom: 16px; }\n    .site-header.is-open .main-nav { display: flex; }\n    .header-inner { flex-wrap: wrap; }\n  }\n</style>"
+  },
+  {
+    "id": "content-1",
+    "phase": "content",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "作品をデータとして管理する",
+    "concept": "作品の情報を、HTMLに直接書くのではなく「データ」として分けて管理してみます。これが **コンテンツコレクション**。記事や作品を `src/content/` に Markdown で置いておき、型付きで安全に読み出せるAstroのしくみです。\n\nまずはコレクションの“形”（どんな項目を持つか）を `src/content/config.ts` で決めて、作品を1つずつ Markdown ファイルにしていきます。\n\n“形”は `z.object({ ... })` という書き方で指定します（`z` は項目の型をチェックしてくれる道具です）。`z.string()` は「文字列」、`z.array(z.string())` は「文字列のリスト」という意味。むずかしく見えますが、やっているのは「各作品は “タイトル（文字）・説明（文字）・タグ（文字のリスト）” を持つ」と宣言しているだけです。",
+    "steps": [
+      "`src/content/config.ts` を作り、`defineCollection` で `works` コレクションを定義する（schema に title・description・tags）",
+      "`src/content/works/project-01.md` を作り、フロントマターに title・description・tags を書く（本文に詳細を書く）",
+      "同じように `project-02.md`・`project-03.md` も作る"
+    ],
+    "starter": {
+      "files": {},
+      "newFiles": {
+        "src/content/config.ts": "// ここにコレクション定義を書く\n",
+        "src/content/works/project-01.md": "---\n# ここにフロントマター（title・description・tags）を書く\n---\n"
+      }
+    },
+    "checkpoints": [
+      "src/content/config.ts に defineCollection と works コレクションがある",
+      "schema に title・description・tags が定義されている",
+      "src/content/works/ に Markdown が3つあり、フロントマターに title などがある"
+    ],
+    "targetTags": [
+      "content-collections"
+    ],
+    "answerPatterns": [
+      "defineCollection",
+      "astro:content",
+      "export const collections",
+      "z.object"
+    ],
+    "answer": "// src/content/config.ts\nimport { defineCollection, z } from 'astro:content';\n\nconst works = defineCollection({\n  type: 'content',\n  schema: z.object({\n    title: z.string(),\n    description: z.string(),\n    tags: z.array(z.string()),\n  }),\n});\n\nexport const collections = { works };\n\n// src/content/works/project-01.md\n---\ntitle: 'プロジェクト名 01'\ndescription: '作品の説明がここに入ります。'\ntags: ['HTML', 'CSS']\n---\nここに作品の詳細を書きます。\n\n// src/content/works/project-02.md\n---\ntitle: 'プロジェクト名 02'\ndescription: '作品の説明がここに入ります。'\ntags: ['JavaScript']\n---\nここに作品の詳細を書きます。\n\n// src/content/works/project-03.md\n---\ntitle: 'プロジェクト名 03'\ndescription: '作品の説明がここに入ります。'\ntags: ['HTML', 'CSS']\n---\nここに作品の詳細を書きます。"
+  },
+  {
+    "id": "content-2",
+    "phase": "content",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "作品一覧をデータから表示する",
+    "concept": "用意した作品データを、実際にページへ出していきます。works-3 で手で書いた `works` 配列を、content-1 で作ったコレクションに置き換えるイメージです。\n\n**① まとめて取り出す：`getCollection`**\n```\nimport { getCollection } from 'astro:content';\nconst works = await getCollection('works');\n```\n`getCollection('works')` は、`src/content/works/` にある Markdown を全部読んで配列にしてくれます。`await` は「読み終わるまで待ってから次へ進む」という合図です。ファイルを読むのには少し時間がかかるので、これを付けます。\n\n**② 1件の中身：`.data` と `.slug`**\n取り出した1件（`w`）は、手書きの配列とは少し形がちがいます。\n- `w.data` …… Markdown のフロントマターに書いた中身（`w.data.title`・`w.data.description`・`w.data.tags`）\n- `w.slug` …… ファイル名から `.md` を取ったもの（`project-01` など）。URLに使います\n\nなので、前の `{...w}` のままでは渡せません。`title={w.data.title}` のように1つずつ渡します。\n\n**③ リンク先をつくる：テンプレート文字列**\nバッククォートという記号（日本語キーボードでは Shift ＋ @ で入力）で囲んだ文字の中では、`${ }` の中に変数を埋め込めます。下の例の、`/works/` の前と最後にある記号がそれです。\n```\nhref={`/works/${w.slug}`}\n```\nこれで `/works/project-01` のようなURLになります。`'` や `\"` で囲むと埋め込みが効かないので注意してください。\n\n**よくあるつまずき**\n- 手書きの `works` 配列を消し忘れて、同じ名前が2つある\n- `w.title` と書いてしまう（正しくは `w.data.title`）\n- `await` を忘れる",
+    "steps": [
+      "index.astro のフロントマターで `import { getCollection } from 'astro:content';` し、`const works = await getCollection('works');` にする（手書きの works 配列は消す）",
+      "`works.map` を `w.data.title`・`w.data.description`・`w.data.tags` で Card に渡すよう書き換える",
+      "詳細ページ用に `href={`/works/${w.slug}`}` を渡す"
+    ],
+    "starter": {
+      "files": {
+        "src/pages/index.astro": "---\nimport BaseLayout from '../layout/BaseLayout.astro';\nimport Header from '../components/Header.astro';\nimport Hero from '../components/Hero.astro';\nimport Card from '../components/Card.astro';\n\n// 手書きの作品データ（これを getCollection に置き換える）\nconst works = [\n  { title: 'プロジェクト名 01', description: '作品の説明がここに入ります。', tags: ['HTML', 'CSS'], href: '#' },\n  { title: 'プロジェクト名 02', description: '作品の説明がここに入ります。', tags: ['JavaScript'], href: '#' },\n  { title: 'プロジェクト名 03', description: '作品の説明がここに入ります。', tags: ['HTML', 'CSS'], href: '#' },\n];\n---\n<BaseLayout title=\"わたしのポートフォリオ\">\n  <Header />\n  <main>\n    <Hero name=\"つくりながら、学ぶ。\" tagline=\"Astroでウェブサイトをひとつずつ組み立てながら、考えたことや作ったものを記録していくポートフォリオです。\" />\n    <section class=\"section\" id=\"works\">\n      <div class=\"c-wrap\">\n        <div class=\"section-head\">\n          <div>\n            <span class=\"c-eyebrow\">WORKS</span>\n            <h2>つくったもの</h2>\n          </div>\n          <a class=\"c-link-arrow\" href=\"/#works\">すべて見る →</a>\n        </div>\n        <div class=\"works-grid\">\n          {works.map((w) => <Card {...w} />)}\n        </div>\n      </div>\n    </section>\n  </main>\n</BaseLayout>"
+      },
+      "newFiles": {}
+    },
+    "checkpoints": [
+      "getCollection('works') が使われている",
+      "手書きの works 配列が無くなっている",
+      "w.data.title などコレクションのデータで Card に渡している",
+      "href に /works/${w.slug} を渡している"
+    ],
+    "targetTags": [
+      "content-collections",
+      "template-expression"
+    ],
+    "answerPatterns": [
+      "getCollection",
+      "w.data",
+      "works.map",
+      "/works/"
+    ],
+    "answer": "// src/pages/index.astro（手書き配列 → getCollection）\n---\nimport BaseLayout from '../layout/BaseLayout.astro';\nimport Header from '../components/Header.astro';\nimport Hero from '../components/Hero.astro';\nimport Card from '../components/Card.astro';\nimport { getCollection } from 'astro:content';\n\nconst works = await getCollection('works');\n---\n<BaseLayout title=\"わたしのポートフォリオ\">\n  <Header />\n  <main>\n    <Hero name=\"つくりながら、学ぶ。\" tagline=\"Astroでウェブサイトをひとつずつ組み立てながら、考えたことや作ったものを記録していくポートフォリオです。\" />\n    <section class=\"section\" id=\"works\">\n      <div class=\"c-wrap\">\n        <div class=\"section-head\">\n          <div>\n            <span class=\"c-eyebrow\">WORKS</span>\n            <h2>つくったもの</h2>\n          </div>\n          <a class=\"c-link-arrow\" href=\"/#works\">すべて見る →</a>\n        </div>\n        <div class=\"works-grid\">\n          {works.map((w) => (\n            <Card title={w.data.title} description={w.data.description} tags={w.data.tags} href={`/works/${w.slug}`} />\n          ))}\n        </div>\n      </div>\n    </section>\n  </main>\n</BaseLayout>"
+  },
+  {
+    "id": "routing-1",
+    "phase": "routing",
+    "evalMode": "astro",
+    "previewPath": "/works/project-01",
+    "title": "作品の詳細ページをつくる",
+    "concept": "仕上げは、作品ごとの詳細ページづくりです。ここは新しいことが多いので、順番に見ていきましょう。\n\n**① ファイル名がそのままURLになる**\nAstro では、`src/pages/` に置いたファイルがそのままページになります。`src/pages/about.astro` なら `/about`、`src/pages/works/hello.astro` なら `/works/hello` です。\n\n**② `[slug].astro`：1つのファイルでたくさんのページ**\nファイル名を `[ ]` で囲むと、その部分が「あとから決まる名前」になります（動的ルート）。`src/pages/works/[slug].astro` を1つ作れば、`/works/project-01`・`/works/project-02`…を全部このファイルで作れます。\n\n**③ `getStaticPaths`：どのページを作るかを教える**\nAstro に「`slug` には何が入るのか」と「そのページで使うデータ」を教える関数です。作品の数だけ `{ params, props }` を返します。\n```\nexport async function getStaticPaths() {\n  const items = await getCollection('works');\n  return items.map((item) => ({\n    params: { slug: item.slug },  // URLの [slug] に入る名前\n    props: { entry: item },       // そのページに渡すデータ\n  }));\n}\n```\n- `params` …… URLの `[slug]` の部分に入る名前\n- `props` …… そのページで `Astro.props` として受け取れるデータ（hero-3 の props と同じ受け取り方です）\n\n**④ 本文を表示する：`entry.render()` と `<Content />`**\n`const { Content } = await entry.render();` で、Markdown の本文が「部品」に変わります。`<Content />` と書いた場所に本文が出ます。タイトルなどは content-2 と同じく `entry.data.title` で取り出せます。\n\n**よくあるつまずき**\n- `[slug].astro` を `src/pages/works/` ではなく `src/pages/` に置いている（URLが変わります）\n- 1つ深いフォルダにあるので、import のパスは `'../../layout/BaseLayout.astro'` のように `../` が2つ必要\n- 確かめるときは、プレビューのURLを `/works/project-01` に変えるか、カードの「詳しく見る」から開いてみてください",
+    "steps": [
+      "`src/pages/works/[slug].astro` を作る",
+      "フロントマターで `getCollection('works')` を使い、`getStaticPaths` で各作品の `params: { slug }` と `props: { entry }` を返す",
+      "`const { entry } = Astro.props;` と `const { Content } = await entry.render();` を書く",
+      "`<Header />`・`<h1>{entry.data.title}</h1>`・タグを表示し、`<Content />` で本文を出す"
+    ],
+    "starter": {
+      "files": {},
+      "newFiles": {
+        "src/pages/works/[slug].astro": "---\n// ここに getStaticPaths と詳細ページの表示を書く\n---\n"
+      }
+    },
+    "checkpoints": [
+      "src/pages/works/[slug].astro がある",
+      "getStaticPaths で getCollection から params.slug と props を返している",
+      "entry.data.title などで内容を表示している",
+      "entry.render() の <Content /> で本文を表示している"
+    ],
+    "targetTags": [
+      "astro-syntax-other",
+      "content-collections"
+    ],
+    "answerPatterns": [
+      "getStaticPaths",
+      "params:",
+      "entry.render",
+      "<Content"
+    ],
+    "answer": "// src/pages/works/[slug].astro\n---\nimport BaseLayout from '../../layout/BaseLayout.astro';\nimport Header from '../../components/Header.astro';\nimport { getCollection } from 'astro:content';\n\nexport async function getStaticPaths() {\n  const works = await getCollection('works');\n  return works.map((entry) => ({\n    params: { slug: entry.slug },\n    props: { entry },\n  }));\n}\n\nconst { entry } = Astro.props;\nconst { Content } = await entry.render();\n---\n<BaseLayout title={entry.data.title}>\n  <Header />\n  <main class=\"work-detail\">\n    <div class=\"c-wrap\">\n      <p class=\"work-detail-tags\">{entry.data.tags.join(' / ')}</p>\n      <h1>{entry.data.title}</h1>\n      <p class=\"work-detail-desc\">{entry.data.description}</p>\n      <article class=\"work-detail-body\">\n        <Content />\n      </article>\n      <a class=\"c-link-arrow\" href=\"/#works\">← Works に戻る</a>\n    </div>\n  </main>\n</BaseLayout>\n\n<style>\n  .work-detail { padding: 80px 0 100px; }\n  .work-detail .c-wrap { max-width: 720px; }\n  .work-detail-tags { color: var(--accent); font-size: 13px; font-weight: 600; letter-spacing: 0.04em; }\n  .work-detail h1 { font-size: 40px; margin: 10px 0 16px; }\n  .work-detail-desc { color: var(--text-muted); margin-bottom: 32px; }\n  .work-detail-body { line-height: 1.9; margin-bottom: 40px; }\n</style>"
+  },
+  {
+    "id": "transition-1",
+    "phase": "transition",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "ページの切り替わりをなめらかにする",
+    "concept": "作品の詳細ページができて、ページを行き来できるようになりました。でもリンクを押すたびに画面が一瞬白くなって、ヘッダーまで読み直されていませんか。\n\nAstro には、これをなめらかにする仕組みが**最初から入っています**。View Transitions といいます。追加のインストールは要りません。\n\n`BaseLayout.astro` の `<head>` に `<ViewTransitions />` を1行置くだけ。ページを移動するときに全部を読み直すのをやめて、**変わったところだけを差し替えて**くれます。ヘッダーは置いたまま、中身だけが入れ替わる動きになります。\n\n2つだけ補足です。\n\n・この仕組みに対応していないブラウザでは、**今までどおりの普通のページ移動になるだけ**です。壊れません。\n・要素に `transition:name=\"◯◯\"` と名前を付けると、「移動の前後で、これは同じものだよ」とブラウザに教えられます。すると、その要素だけが位置や大きさを変えながら動いて見えます。今回は置くところまでで十分なので、名前付けは触りません。",
+    "steps": [
+      "`BaseLayout.astro` のフロントマターに `import { ViewTransitions } from 'astro:transitions';` を書き足す",
+      "`<head>` の中（`<title>` の下あたり）に `<ViewTransitions />` を置く",
+      "プレビューで Works のカードから詳細ページへ移動し、「← Works に戻る」で戻ってみる",
+      "移動のときに画面が白く点滅しなくなっていれば成功"
+    ],
+    "starter": {
+      "files": {
+        "src/layout/BaseLayout.astro": ""
+      },
+      "newFiles": {}
+    },
+    "checkpoints": [
+      "BaseLayout.astro で astro:transitions から ViewTransitions が import されている",
+      "<head> の中に <ViewTransitions /> が置かれている",
+      "ページを移動しても表示が崩れない"
+    ],
+    "targetTags": [
+      "astro-syntax-other",
+      "component-import"
+    ],
+    "answerPatterns": [
+      "ViewTransitions",
+      "astro:transitions"
+    ],
+    "answer": "// src/layout/BaseLayout.astro（ViewTransitions を追加）\n---\nimport '../styles/global.css';\nimport Footer from '../components/Footer.astro';\nimport { ViewTransitions } from 'astro:transitions';\nconst { title } = Astro.props;\n---\n<!DOCTYPE html>\n<html lang=\"ja\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>{title}</title>\n    <ViewTransitions />\n  </head>\n  <body>\n    <slot />\n    <Footer />\n  </body>\n</html>"
+  },
+  {
+    "id": "island-1",
+    "phase": "island",
+    "evalMode": "astro",
+    "previewPath": "/",
+    "title": "作品をタグで絞り込む",
+    "concept": "最後はAstroの看板の話です。\n\n`interact-1` では `<script>` でメニューを開け閉めしました。あれは「すでにHTMLにあるものを触る」やり方です。でも今回やりたいのは「タグを選ぶと、作品の一覧そのものが作り直される」こと。これを素のJavaScriptで書くと、HTMLを文字列で組み立てて入れ替える…と、だんだん手に負えなくなります。\n\nAstroの答えが**アイランド（島）**です。\n\n**① 考え方**\nページのほとんどはJavaScriptをまったく積まない静的なHTMLのまま。**動きが要る部品だけ**を島として切り出して、そこにだけJavaScriptを届けます。ページ全体を重くせずに、必要なところだけ動かす考え方です。\n\n**② 島にはUIフレームワークが要る**\n`.astro` ファイルは「サーバーで組み立てて、HTMLだけ届ける」部品なので、島にはできません。島にするには Preact のようなUIフレームワークの部品（`.jsx` ファイル）にします。この教材では Preact を使えるようにしてあります。\n\n`.jsx` は「HTMLに似た書き方ができるJavaScript」だと思ってください。`useState` は「いまの値」と「その値を変える関数」をセットで受け取る仕組みで、値を変えると画面が自動で描き直されます。\n\n**③ `client:` を付けて初めて島になる**\nここが一番大事です。`.jsx` の部品を置くだけでは、Astroはそれを**ただのHTML**に変換して終わりです。JavaScriptは1バイトも届きません。\n\n```\n<WorksFilter works={works} client:load />\n```\n\nこの `client:load` が「この部品はブラウザでも動かして」という指示です。\n\n・`client:load` … ページを開いたらすぐ動かす\n・`client:visible` … その部品が画面に入ってきたら動かす（下の方にある部品向け）\n・`client:idle` … 手が空いたら動かす\n\n最後のステップで `client:load` を消してみてください。**ボタンを押しても何も起きなくなります。**それがアイランドの正体です。\n\n**④ 島に渡せるのは「ただのデータ」だけ**\n島に渡す値はブラウザへ送るためにJSONに変換されます。なので `getCollection` が返すものをそのまま渡すことはできません（中に関数が入っているため）。`title` や `tags` といった**素の値だけを取り出して**渡します。\n\n見た目のCSSは覚えなくて大丈夫です。下のコードを `src/components/WorksFilter.css` にそのまま貼ってください（右上にコピーボタンがあります）。\n\n```\n.wf-tags { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }\n.wf-tag {\n  font-family: inherit; font-size: 13px; padding: 7px 16px; border-radius: 999px;\n  border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer;\n}\n.wf-tag:hover { border-color: var(--accent); color: var(--accent); }\n.wf-tag.is-on { background: var(--accent); border-color: var(--accent); color: #fff; }\n.wf-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }\n.wf-card {\n  background: var(--surface); border: 1px solid var(--border); border-radius: 6px;\n  padding: 22px; display: flex; flex-direction: column; gap: 10px;\n}\n.wf-card h3 { font-size: 18px; }\n.wf-card p { color: var(--text-muted); font-size: 14px; line-height: 1.7; }\n.wf-card-tags { display: flex; gap: 8px; flex-wrap: wrap; }\n.wf-card-tags span { font-size: 11px; color: var(--text-muted); border: 1px solid var(--border); border-radius: 999px; padding: 4px 10px; }\n.wf-empty { color: var(--text-muted); font-size: 14px; }\n\n@media (max-width: 720px) { .wf-grid { grid-template-columns: 1fr; } }\n```",
+    "steps": [
+      "`astro.config.mjs` に `import preact from '@astrojs/preact';` を足し、`defineConfig({ integrations: [preact()] })` のように書き加える",
+      "`src/components/WorksFilter.css` を新規作成し、上のCSSをそのまま貼り付ける（コピペでOK）",
+      "`src/components/WorksFilter.jsx` を新規作成する。`useState` で「選んでいるタグ」を持ち、タグのボタンを並べる",
+      "選んでいるタグで `works` を絞り込み、残ったものをカードとして並べる",
+      "`index.astro` で `getCollection` の結果から `title`・`description`・`tags`・`href` だけを取り出した配列を作り、`<WorksFilter works={works} client:load />` で呼び出す",
+      "プレビューでタグを押して、一覧が切り替わることを確かめる",
+      "ためしに `client:load` を消して保存し、**ボタンを押しても何も起きない**ことを確かめる。確かめたら戻す"
+    ],
+    "starter": {
+      "files": {
+        "astro.config.mjs": "",
+        "src/pages/index.astro": ""
+      },
+      "newFiles": {
+        "src/components/WorksFilter.jsx": "// ここに絞り込みの部品を書く\n",
+        "src/components/WorksFilter.css": "/* ここに問題文のCSSを貼る */\n"
+      }
+    },
+    "checkpoints": [
+      "astro.config.mjs の integrations に preact() が入っている",
+      "WorksFilter.jsx で useState が使われ、選んでいるタグを持っている",
+      "index.astro で WorksFilter が client: ディレクティブ付きで呼び出されている",
+      "島に渡しているのが素の値の配列である（getCollection の結果をそのまま渡していない）"
+    ],
+    "targetTags": [
+      "client-directive",
+      "props",
+      "js-basics"
+    ],
+    "answerPatterns": [
+      "client:load",
+      "useState",
+      "integrations:\\s*\\[preact"
+    ],
+    "answer": "// astro.config.mjs（Preact を使えるようにする）\nimport { defineConfig } from 'astro/config';\nimport preact from '@astrojs/preact';\n\nexport default defineConfig({\n  integrations: [preact()],\n});\n\n// src/components/WorksFilter.jsx\nimport { useState } from 'preact/hooks';\nimport './WorksFilter.css';\n\nexport default function WorksFilter({ works }) {\n  const [tag, setTag] = useState('すべて');\n  const tags = ['すべて', ...new Set(works.flatMap((w) => w.tags))];\n  const shown = tag === 'すべて' ? works : works.filter((w) => w.tags.includes(tag));\n\n  return (\n    <div>\n      <div class=\"wf-tags\">\n        {tags.map((t) => (\n          <button class={t === tag ? 'wf-tag is-on' : 'wf-tag'} onClick={() => setTag(t)}>{t}</button>\n        ))}\n      </div>\n      {shown.length === 0 ? (\n        <p class=\"wf-empty\">このタグの作品はまだありません。</p>\n      ) : (\n        <div class=\"wf-grid\">\n          {shown.map((w) => (\n            <article class=\"wf-card\">\n              <h3>{w.title}</h3>\n              <p>{w.description}</p>\n              <div class=\"wf-card-tags\">{w.tags.map((t) => <span>{t}</span>)}</div>\n              <a class=\"c-link-arrow\" href={w.href}>詳しく見る →</a>\n            </article>\n          ))}\n        </div>\n      )}\n    </div>\n  );\n}\n\n// src/pages/index.astro（Works の中身を島に差し替え）\n---\nimport BaseLayout from '../layout/BaseLayout.astro';\nimport Header from '../components/Header.astro';\nimport Hero from '../components/Hero.astro';\nimport WorksFilter from '../components/WorksFilter.jsx';\nimport { getCollection } from 'astro:content';\n\nconst entries = await getCollection('works');\n// 島に渡せるのは素の値だけ。entry をそのまま渡すと関数が混じっていて送れない\nconst works = entries.map((w) => ({\n  title: w.data.title,\n  description: w.data.description,\n  tags: w.data.tags,\n  href: `/works/${w.slug}`,\n}));\n---\n<BaseLayout title=\"わたしのポートフォリオ\">\n  <Header />\n  <main>\n    <Hero name=\"つくりながら、学ぶ。\" tagline=\"...\" />\n    <section class=\"section\" id=\"works\">\n      <div class=\"c-wrap\">\n        <div class=\"section-head\">\n          <div>\n            <span class=\"c-eyebrow\">WORKS</span>\n            <h2>つくったもの</h2>\n          </div>\n        </div>\n        <WorksFilter works={works} client:load />\n      </div>\n    </section>\n  </main>\n</BaseLayout>"
+  }
+]
