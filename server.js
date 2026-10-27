@@ -35,6 +35,15 @@ const WORKSPACE_CONF = path.join(ROOT, 'workspace-path.local');
 const TEMPLATE_DIR = path.join(ROOT, 'workspace', '_initial');
 const DEPS_CACHE = path.join(ROOT, 'workspace', '_deps', 'node_modules');
 
+// 子プロセスに渡す環境。いま動いている node のフォルダを PATH の先頭に置く。
+// npm も node_modules/.bin/astro も #!/usr/bin/env node で始まるシェルスクリプトなので、
+// node が PATH に無いと「env: node: No such file or directory」で落ちる。
+// ランチャーが携帯版の Node（_node/）を使っている場合に実際に起きた（2026-10-27）
+const childEnv = () => ({
+  ...process.env,
+  PATH: path.dirname(process.execPath) + path.delimiter + (process.env.PATH || ''),
+});
+
 // こちらから起動した astro dev。二重起動を防ぎ、終了を検知するために持っておく
 let previewProc = null;
 let previewPort = null;
@@ -583,7 +592,7 @@ const handleApi = async (req, res, url) => {
     }
     try {
       const child = require('child_process').spawn(bin, ['dev', '--port', String(port)], {
-        cwd: workspaceDir, shell: process.platform === 'win32', windowsHide: true,
+        cwd: workspaceDir, shell: process.platform === 'win32', windowsHide: true, env: childEnv(),
       });
       let log = '';
       child.stdout.on('data', (d) => { log += d.toString(); });
@@ -676,11 +685,16 @@ const handleApi = async (req, res, url) => {
       } else {
         // clone してきた場合はここを通る。初回だけネット接続が必要
         const { execFileSync } = require('child_process');
-        const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+        // npm は PATH ではなく「今動いている node の隣」から探す。
+        // ランチャーが携帯版の Node（_node/）を使っている場合、PATH には載っていないため
+        // 'npm' のままでは見つからない。公式の配布物は node と npm が同じフォルダに入っている。
+        const npmBin = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+        const npmBeside = path.join(path.dirname(process.execPath), npmBin);
+        const npm = fs.existsSync(npmBeside) ? npmBeside : npmBin;
         try {
           execFileSync(npm, ['install', '--no-audit', '--no-fund'], {
             cwd: target, shell: process.platform === 'win32', windowsHide: true,
-            timeout: 10 * 60 * 1000, stdio: 'pipe',
+            timeout: 10 * 60 * 1000, stdio: 'pipe', env: childEnv(),
           });
           deps = 'installed';
         } catch (e) {

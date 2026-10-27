@@ -81,6 +81,9 @@ if ($port8787Busy) {
 } else {
     Write-Host "[srv] Starting study server..." -ForegroundColor Cyan
     $env:LOCAL_MODE = "1"
+    # Put the Node folder first on PATH. With the portable Node in _node\ this is required,
+    # otherwise node_modules\.bin\astro cannot find node and the preview fails to start.
+    $env:PATH = (Split-Path $nodeExe -Parent) + ';' + $env:PATH
     Start-Process -WindowStyle Minimized -FilePath $nodeExe -ArgumentList "`"$AppDir\server.js`"" -WorkingDirectory $AppDir
 }
 

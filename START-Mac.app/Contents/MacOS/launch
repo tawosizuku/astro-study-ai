@@ -15,13 +15,47 @@ fail () { osascript -e "display dialog \"$1\" with title \"Astro学習支援AI\"
 
 [ -f "$HERE/server.js" ] || fail "server.js が見つかりません。このアプリは prototypes/astro-study/ の中に置いてください。（探した場所: $HERE）"
 
-# node を探す。Finderから起動するとPATHが最小限なので、よくある場所も見る
-NODE="$(command -v node || true)"
-for p in /usr/local/bin/node /opt/homebrew/bin/node "$HOME/.volta/bin/node"; do
-  [ -n "$NODE" ] && break
-  [ -x "$p" ] && NODE="$p"
-done
-[ -n "$NODE" ] || fail "Node.js が見つかりません。インストールしてからもう一度お試しください。"
+# node を探す。順に「前回ダウンロードした携帯版 → システム → 自動ダウンロード」。
+# Finderから起動するとPATHが最小限なので、よくある場所も直接見る
+NODE_DIR="$HERE/_node"
+NODE=""
+[ -x "$NODE_DIR/bin/node" ] && NODE="$NODE_DIR/bin/node"
+if [ -z "$NODE" ]; then
+  NODE="$(command -v node || true)"
+  for p in /usr/local/bin/node /opt/homebrew/bin/node "$HOME/.volta/bin/node"; do
+    [ -n "$NODE" ] && break
+    [ -x "$p" ] && NODE="$p"
+  done
+fi
+
+# どこにも無ければ公式サイトから携帯版を取ってくる（Windows の _workspace.ps1 と同じ方針）。
+# 学習者にNode.jsを自分でインストールさせないため。_node/ は gitignore 済み
+if [ -z "$NODE" ]; then
+  case "$(uname -m)" in
+    arm64) ARCH="arm64" ;;
+    x86_64) ARCH="x64" ;;
+    *) fail "対応していないMacです（$(uname -m)）。Node.js を手動でインストールしてください: https://nodejs.org" ;;
+  esac
+  notify "Node.js をダウンロードしています（初回のみ・約50MB）"
+  VER="$(curl -fsS --max-time 30 https://nodejs.org/dist/index.json 2>/dev/null \
+         | tr '{' '\n' | grep -m1 '"lts":"' | sed -n 's/.*"version":"\([^"]*\)".*/\1/p')"
+  [ -n "$VER" ] || fail "Node.js の情報を取得できませんでした。インターネット接続を確認してください。"
+  TMPD="$(mktemp -d)"
+  if ! curl -fL --max-time 600 "https://nodejs.org/dist/$VER/node-$VER-darwin-$ARCH.tar.gz" \
+       -o "$TMPD/node.tar.gz" >>"$LOG" 2>&1; then
+    rm -rf "$TMPD"
+    fail "Node.js のダウンロードに失敗しました。インターネット接続を確認してください。"
+  fi
+  mkdir -p "$NODE_DIR"
+  if ! tar -xzf "$TMPD/node.tar.gz" -C "$NODE_DIR" --strip-components=1 >>"$LOG" 2>&1; then
+    rm -rf "$TMPD" "$NODE_DIR"
+    fail "Node.js の展開に失敗しました。"
+  fi
+  rm -rf "$TMPD"
+  [ -x "$NODE_DIR/bin/node" ] || { rm -rf "$NODE_DIR"; fail "Node.js を用意できませんでした。"; }
+  NODE="$NODE_DIR/bin/node"
+  notify "Node.js $VER を用意しました"
+fi
 
 # すでに動いていれば起動しない
 if ! curl -s -o /dev/null --max-time 2 "http://localhost:$PORT/index.html"; then
@@ -29,7 +63,9 @@ if ! curl -s -o /dev/null --max-time 2 "http://localhost:$PORT/index.html"; then
   # LOCAL_MODE=1 は必須。これが無いと server.js が 127.0.0.1 ではなく全ネットワーク面で
   # 待ち受け、同じWi-Fiの他人が /api/auth/guest でセッションを取って /api/claude などを
   # 叩けてしまう（2026-10-27 修正。Windows の start.bat は以前から設定済み）
-  LOCAL_MODE=1 nohup "$NODE" server.js >> "$LOG" 2>&1 &
+  # node のあるフォルダを PATH の先頭に置く。携帯版を使っている場合、これが無いと
+  # node_modules/.bin/astro の #!/usr/bin/env node が node を見つけられない
+  LOCAL_MODE=1 PATH="$(dirname "$NODE"):$PATH" nohup "$NODE" server.js >> "$LOG" 2>&1 &
   for _ in $(seq 1 20); do
     sleep 0.5
     curl -s -o /dev/null --max-time 2 "http://localhost:$PORT/index.html" && break
