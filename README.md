@@ -89,6 +89,29 @@ Googleログインを使う構成（卒研の報告書用に残している）�
 LOCAL_MODE=0 GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com node server.js
 ```
 
+### サーバーを借りて公開する場合
+
+**`PUBLIC_MODE=1` を必ず付けること。** これが無いと、誰でもゲストログインして
+`/api/claude`（このサーバー上で `claude` CLI を実行する）等を叩ける状態になる。
+
+```bash
+PUBLIC_MODE=1 GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com node server.js
+```
+
+`PUBLIC_MODE=1` は以下を行う:
+
+- `/api/claude` `/api/pick-folder` `/api/open-editor` `/api/preview/start`
+  `/api/workspace/create` `/api/reset-all`（学習者自身のPCを操作する前提のAPI）を403で塞ぐ
+- `GOOGLE_CLIENT_ID` が無いと起動を拒否する（無いとゲストログインだけが入口になるため）
+- `LOCAL_MODE=1` と同時に指定すると起動を拒否する
+
+**これらの API を塞ぐと、プロジェクトの作成・コードの読み込み・プレビュー起動ができなくなる。**
+これは File System Access API（ブラウザ側でローカルファイルを扱う仕組み。対応は Chrome/Edge のみ）
+で代替する設計だが、**まだ実装していない**。詳細: `.company/engineering/docs/astro-study-ai-distribution-design.md`
+
+ホスティングは永続ディスクが必要（`data.db` に `node:sqlite` を使用）。Vercel・Netlify 等の
+サーバーレスは不可。Fly.io・Render・VPS などを検討すること。
+
 サーバー本体は依存パッケージなし（Node 22.5+ のみ。組み込みの `node:sqlite` を使用するため）。
 `npm install` は不要（2026-10-27に実行プレビューを廃止し、唯一の依存だった `@webcontainer/api` を外したため）。
 

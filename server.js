@@ -12,10 +12,38 @@ const PORT = Number(process.env.PORT) || 8787;
 // ローカルモード: VS Code拡張が学習者のPC上で起動する運用。
 // ログインを行わず、この端末の単一ユーザーとして扱う（2026-09-24決定）。
 // 公開サーバーとして動かす場合はこの環境変数を付けない（従来どおりGoogleログインが必要）
+// 公開モード（2026-10-28）。借りたサーバーでインターネットに出して動かすときに付ける。
+// 学習者のPCを直接操作するAPI（プロセス起動・フォルダ作成・エディタ起動）をすべて塞ぐ。
+// これらは「サーバー＝学習者自身のPC」という前提で書かれており、公開すると
+// 第三者にそのマシンを触らせることになるため。
+const PUBLIC_MODE = process.env.PUBLIC_MODE === '1';
+
 // 既定でローカルモード（2026-10-27）。この道具は学習者が自分のPCにcloneして動かす前提なので、
 // 「付け忘れると全ネットワーク面で待ち受けてしまう」向きの既定は危険だった。
-// Googleログインを使う構成（卒研の報告書用に残している）で動かすときだけ LOCAL_MODE=0 を付ける。
-const LOCAL_MODE = process.env.LOCAL_MODE !== '0';
+// 公開モードではログインが要るので、ローカルモードにはならない。
+const LOCAL_MODE = !PUBLIC_MODE && process.env.LOCAL_MODE !== '0';
+
+if (PUBLIC_MODE && process.env.LOCAL_MODE === '1') {
+  console.error('[中止] PUBLIC_MODE と LOCAL_MODE=1 は同時に指定できません。公開サーバーなら PUBLIC_MODE=1 だけを付けてください。');
+  process.exit(1);
+}
+
+// 公開モードで塞ぐパス。「このPCで何かを実行する」ものだけを挙げている。
+// 読み書き系（/api/check-files, /api/read-workspace, /api/seed-review）は、公開サーバーでは
+// getWorkspaceDir() が null なので 400 を返して自然に無害化される。
+// これらは将来 File System Access API でブラウザ側に移す予定（設計書を参照）。
+const MACHINE_ONLY_PATHS = new Set([
+  '/api/claude',           // この端末の claude CLI を spawn する
+  '/api/pick-folder',      // OSのフォルダ選択ダイアログを開く
+  '/api/check-editor',     // VS Code の有無を execSync で調べる
+  '/api/open-editor',      // VS Code を起動する
+  '/api/preview/start',    // astro dev を spawn する
+  '/api/workspace/create', // 任意の場所にフォルダを作る
+  '/api/reset-all',        // 破壊的（ワークスペースごと消す）
+  '/api/reset-exhibit',    // 学園祭展示(2026-10-17〜18)専用
+  '/api/exhibit-round',
+  '/reset-exhibit',
+]);
 
 // 展示ロック（2026-10-09）: 学園祭展示中は展示用の問題(study.html?unit=exhibit-1)と苦手ノートだけ見せる。
 // ほかのページはすべて展示ページへ転送し、ナビも2つに絞る。展示が終わったら false に戻す
@@ -76,6 +104,10 @@ const validateWorkspaceTarget = (dir) => {
 };
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+if (PUBLIC_MODE && !GOOGLE_CLIENT_ID) {
+  console.error('[中止] PUBLIC_MODE には GOOGLE_CLIENT_ID が必要です。無いとゲストログインだけが入口になります（README参照）。');
+  process.exit(1);
+}
 if (!GOOGLE_CLIENT_ID && !LOCAL_MODE) {
   console.warn('[警告] 環境変数 GOOGLE_CLIENT_ID が設定されていません。ログインが機能しません（README参照）。');
 }
@@ -299,6 +331,10 @@ const previewBox = new Map();
 const PREVIEW_STALE_MS = 45 * 1000;
 
 const handleApi = async (req, res, url) => {
+  if (PUBLIC_MODE && MACHINE_ONLY_PATHS.has(url.pathname)) {
+    sendJson(res, 403, { error: 'この機能は公開サーバーでは使えません。手元のPCで動かしてください。' });
+    return;
+  }
   if (req.method === 'GET' && url.pathname === '/api/config') {
     sendJson(res, 200, { googleClientId: GOOGLE_CLIENT_ID || null, localMode: LOCAL_MODE });
     return;
@@ -825,4 +861,5 @@ http.createServer(async (req, res) => {
   console.log(`astro-study-ai prototype: http://127.0.0.1:${PORT}`);
   if (LOCAL_MODE) console.log('ローカルモード: ログインなし・この端末の単一ユーザーで動作します');
   else console.warn('[警告] LOCAL_MODE=0 です。全ネットワーク面で待ち受けるため、同じネットワークの他人から見えます。');
+  if (PUBLIC_MODE) console.log(`公開モード: このPCを操作するAPI${MACHINE_ONLY_PATHS.size}件を封鎖しました`);
 });
