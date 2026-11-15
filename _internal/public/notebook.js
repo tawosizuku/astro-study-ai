@@ -48,6 +48,42 @@ const renderNotebook = (state) => {
     .join('');
 };
 
+// このページを初めて開いたときだけ出す案内
+const NOTEBOOK_TOUR_SEEN_KEY = 'notebookTourSeen';
+
+const NOTEBOOK_TOUR_STEPS = [
+  {
+    target: '#progress',
+    text: 'ここが「記録・進捗」のページです。クリアした単元の数、いま覚えている苦手の数、挑戦した回数がひと目で分かります。',
+  },
+  {
+    target: '#weak-section',
+    text: 'AIが見つけた「いまのつまずき」がここに並びます。カードの「練習する →」から、その苦手だけを狙った復習問題に挑戦できます。',
+  },
+  {
+    target: '#history',
+    text: 'ここを開くと、いままで解いた問題を全部さかのぼって見られます。',
+  },
+  {
+    // 「記憶をぜんぶリセットする」ボタンは誤タップで消してしまうと危ないので、
+    // ここだけは対象を指さず文章だけで説明する（押させない）
+    text: '苦手ノートの下には「記憶をぜんぶリセットする」ボタンもあります。使い方に迷ったとき以外は押さなくて大丈夫です。',
+    buttonLabel: 'とじる',
+  },
+];
+
+const maybeStartNotebookTour = () => {
+  // 初めてこのページを開いたときだけ、自動で案内を始める
+  let seen = false;
+  try {
+    seen = localStorage.getItem(NOTEBOOK_TOUR_SEEN_KEY) === '1';
+    if (!seen) localStorage.setItem(NOTEBOOK_TOUR_SEEN_KEY, '1');
+  } catch { /* localStorageが使えない環境では案内を出さないだけ */ }
+  if (seen || typeof window.startSpotlightTour !== 'function') return;
+  // 苦手カードの中身が埋まってから測りたい。先に出すと枠が内容量でずれる
+  requestAnimationFrame(() => window.startSpotlightTour(NOTEBOOK_TOUR_STEPS));
+};
+
 const init = async () => {
   const state = await getState();
   renderNotebook(state);
@@ -64,6 +100,8 @@ const init = async () => {
     renderNotebook({ problems: state.problems, memory: r.memory });
     $('reset-status').textContent = '記憶をリセットしました。';
   });
+
+  maybeStartNotebookTour();
 };
 
 window.onAuthReady = () => {

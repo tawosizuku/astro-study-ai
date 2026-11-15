@@ -34,6 +34,8 @@ if (PUBLIC_MODE && process.env.LOCAL_MODE === '1') {
 // これらは将来 File System Access API でブラウザ側に移す予定（設計書を参照）。
 const MACHINE_ONLY_PATHS = new Set([
   '/api/claude',           // この端末の claude CLI を spawn する
+  '/api/claude/status',    // 同CLIの認証状態を調べる（spawnは発生するがモデル呼び出しは無い）
+  '/api/claude/open-terminal', // Claude Codeのインストール・ログイン用にターミナルを開く
   '/api/pick-folder',      // OSのフォルダ選択ダイアログを開く
   '/api/check-editor',     // VS Code の有無を execSync で調べる
   '/api/open-editor',      // VS Code を起動する
@@ -284,6 +286,97 @@ const resetExhibit = (userId, reason = 'unknown') => {
   answerBox.delete(userId);
 };
 
+// START-Mac.appからの起動（Finderでダブルクリック）はログインシェルを経由しないため、PATHが
+// 最小限（/usr/bin:/bin等）になる。claudeコマンドはnvm・npmのprefix設定等で任意の場所に
+// 入りうり、その追加は大抵 .zshrc 等「対話シェルでしか読まれないファイル」に書かれているため、
+// 単純にspawnするだけでは「command not found」になり未インストール扱いされてしまう
+// （node自身は起動スクリプト側で既知のパスを直接見て対処済みだが、claudeは同じ手が使えない）。
+// 対策として、ユーザーの対話シェルを経由して実際のパスを解決し、見つかったらキャッシュする。
+// 「見つからない」は覚えない（画面の案内からインストールした直後に、再起動なしで検出できるように）。
+// 公式のネイティブインストーラーは ~/.local/bin/claude に置くが、直後はPATHに入っていないことが多いので
+// その既知の場所も直接見る（WindowsはPATHを探す手段が無いので既知の場所だけ）
+const KNOWN_CLAUDE_PATHS = process.platform === 'win32'
+  ? [path.join(os.homedir(), '.local', 'bin', 'claude.exe')]
+  : [path.join(os.homedir(), '.local', 'bin', 'claude')];
+let cachedClaudeBin = null;
+const resolveClaudeBin = () => {
+  if (cachedClaudeBin) return cachedClaudeBin;
+  if (process.platform !== 'win32') {
+    const { execSync } = require('child_process');
+    const shell = process.env.SHELL || '/bin/zsh';
+    try {
+      const found = execSync(`${shell} -ic "command -v claude"`, { timeout: 5000 }).toString().trim().split('\n').pop();
+      if (found && found.startsWith('/')) cachedClaudeBin = found;
+    } catch { /* 見つからない */ }
+  }
+  if (!cachedClaudeBin) cachedClaudeBin = KNOWN_CLAUDE_PATHS.find((p) => fs.existsSync(p)) || null;
+  return cachedClaudeBin;
+};
+// spawn(..., { shell: true }) に渡すコマンド名。パスに空白（Windowsのユーザー名など）があっても動くよう引用符で囲む
+const claudeCommand = () => {
+  const bin = resolveClaudeBin();
+  return bin ? `"${bin}"` : 'claude';
+};
+
+// 画面の「Claude Codeを入れる」「Claudeにログイン」ボタンから呼ぶ。
+// インストールもログインも、人が見て操作できるターミナルの窓が要る（ログインはブラウザ認証、
+// インストールは進捗や失敗を本人が見られるように）ので、裏で実行せず「ターミナルを開いて
+// 決まったコマンドを走らせる」だけにする。コマンドは固定で、リクエストから受け取った文字列は使わない。
+// コマンドは公式手順（https://code.claude.com/docs/en/setup）のとおり
+const CLAUDE_SETUP_STEPS = {
+  install: {
+    title: 'Claude Code をインストールします',
+    mac: 'curl -fsSL https://claude.ai/install.sh | bash',
+    win: 'irm https://claude.ai/install.ps1 | iex',
+    after: 'インストールが終わったら、このウィンドウを閉じてブラウザの画面に戻ってください。',
+  },
+  login: {
+    title: 'Claude にログインします（ブラウザが開きます。Pro以上のアカウントでログインしてください）',
+    mac: 'claude auth login --claudeai',
+    win: 'claude auth login --claudeai',
+    after: 'ログインが終わったら、このウィンドウを閉じてブラウザの画面に戻ってください。',
+  },
+};
+const openClaudeSetupTerminal = (stepName) => {
+  const step = CLAUDE_SETUP_STEPS[stepName];
+  if (!step) throw new Error('不明な手順です');
+  const { spawn } = require('child_process');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'astro-claude-setup-'));
+  if (process.platform === 'darwin') {
+    // .command ファイルは open するとターミナル.appで実行される
+    const file = path.join(dir, `claude-${stepName}.command`);
+    fs.writeFileSync(file, [
+      '#!/bin/bash',
+      'clear',
+      'export PATH="$HOME/.local/bin:$PATH"',
+      `echo "== ${step.title} =="`,
+      'echo',
+      step.mac,
+      'echo',
+      `echo "${step.after}"`,
+      '',
+    ].join('\n'), { mode: 0o755 });
+    spawn('open', [file], { detached: true, stdio: 'ignore' }).unref();
+    return;
+  }
+  if (process.platform === 'win32') {
+    // detached にすると新しいコンソール窓で開く。日本語を出すのでBOM付きUTF-8で書く
+    const file = path.join(dir, `claude-${stepName}.ps1`);
+    fs.writeFileSync(file, '\ufeff' + [
+      '$env:Path = "$env:USERPROFILE\\.local\\bin;" + $env:Path',
+      `Write-Host "== ${step.title} =="`,
+      'Write-Host ""',
+      step.win,
+      'Write-Host ""',
+      `Write-Host "${step.after}"`,
+      '',
+    ].join('\r\n'), 'utf8');
+    spawn('powershell.exe', ['-NoExit', '-ExecutionPolicy', 'Bypass', '-File', file], { detached: true, stdio: 'ignore' }).unref();
+    return;
+  }
+  throw new Error('このOSでは自動で開けません。ターミナルで手動で実行してください。');
+};
+
 // 展示中はGeminiの無料枠（来場者が多いと上限に当たる）を使わず、このPCのClaude Codeで採点する。
 // ツールは全部外し、ただ「システムプロンプト＋入力 → 文章」を返すだけの使い方にする。
 // システムプロンプトは改行や引用符を含むので、コマンドライン引数ではなく一時ファイルで渡す
@@ -302,7 +395,7 @@ const callClaude = (system, user) => new Promise((resolve, reject) => {
   // Windowsでは claude が .cmd なので shell 経由で起動する（空文字の引数は "" と書かないと消える）
   const args = ['-p', '--system-prompt-file', `"${sysFile}"`, '--tools', '""', '--strict-mcp-config',
     '--no-session-persistence', '--disable-slash-commands', '--model', 'sonnet', '--output-format', 'json'];
-  const child = spawn('claude', args, { cwd: workDir, shell: true, windowsHide: true });
+  const child = spawn(claudeCommand(), args, { cwd: workDir, shell: true, windowsHide: true });
   let out = '';
   let err = '';
   const timer = setTimeout(() => { child.kill(); }, CLAUDE_TIMEOUT_MS);
@@ -321,6 +414,29 @@ const callClaude = (system, user) => new Promise((resolve, reject) => {
     }
   });
   child.stdin.end(user, 'utf8');
+});
+
+// 起動時・設定画面から呼ぶ軽量チェック。「claude auth status --json」はモデルを呼ばず
+// ローカルの認証状態だけを見るので、callClaude（1回ごとに課金が発生する本番呼び出し）とは違い
+// 気軽に何度呼んでもよい。claude未インストール・未ログインのどちらもここで判別してUIに返す
+const CLAUDE_STATUS_TIMEOUT_MS = 8 * 1000;
+const checkClaudeStatus = () => new Promise((resolve) => {
+  const { spawn } = require('child_process');
+  const child = spawn(claudeCommand(), ['auth', 'status', '--json'], { shell: true, windowsHide: true });
+  let out = '';
+  const timer = setTimeout(() => { child.kill(); resolve({ available: false, reason: 'timeout' }); }, CLAUDE_STATUS_TIMEOUT_MS);
+  child.stdout.on('data', (d) => { out += d; });
+  child.on('error', () => { clearTimeout(timer); resolve({ available: false, reason: 'not_installed' }); });
+  child.on('close', () => {
+    clearTimeout(timer);
+    try {
+      const data = JSON.parse(out);
+      if (!data.loggedIn) { resolve({ available: false, reason: 'not_logged_in' }); return; }
+      resolve({ available: true, email: data.email || null, subscriptionType: data.subscriptionType || null });
+    } catch {
+      resolve({ available: false, reason: 'not_installed' });
+    }
+  });
 });
 
 // プレビュー（VS Codeで動いている astro dev）の場所。
@@ -369,7 +485,13 @@ const handleApi = async (req, res, url) => {
   }
   if (req.method === 'POST' && url.pathname === '/api/auth/logout') {
     clearSessionCookie(res);
-    sendJson(res, 200, {});
+    sendJson(res, 200, { shuttingDown: LOCAL_MODE });
+    // ローカルモードはこの端末の単一ユーザー専用の「アプリ」なので、ログアウト＝終了として扱う。
+    // PUBLIC_MODE等の共有サーバーでは他の利用者がいるため、ここでプロセスを落としてはいけない
+    if (LOCAL_MODE) {
+      console.log('ログアウト操作によりサーバーを終了します。');
+      setTimeout(() => process.exit(0), 200);
+    }
     return;
   }
 
@@ -466,6 +588,28 @@ const handleApi = async (req, res, url) => {
     const { reason } = await readBody(req);
     resetExhibit(userId, ['next-button', 'idle'].includes(reason) ? reason : 'unknown');
     sendJson(res, 200, { ok: true });
+    return;
+  }
+
+  if (req.method === 'GET' && url.pathname === '/api/claude/status') {
+    sendJson(res, 200, await checkClaudeStatus());
+    return;
+  }
+
+  if (req.method === 'POST' && url.pathname === '/api/claude/open-terminal') {
+    // 他のサイトからこのPCのターミナルを開かせないよう、同じ画面からの要求だけ受け付ける
+    const origin = req.headers.origin;
+    if (origin && origin !== `http://${req.headers.host}`) {
+      sendJson(res, 403, { error: 'この画面以外からは実行できません' });
+      return;
+    }
+    const { step } = await readBody(req);
+    try {
+      openClaudeSetupTerminal(String(step || ''));
+      sendJson(res, 200, { ok: true });
+    } catch (e) {
+      sendJson(res, 400, { error: e.message });
+    }
     return;
   }
 
@@ -707,6 +851,15 @@ const handleApi = async (req, res, url) => {
     const invalid = validateWorkspaceTarget(expanded);
     const target = invalid ? '' : path.resolve(expanded);
     if (invalid) { sendJson(res, 400, { error: invalid }); return; }
+    // 失敗したときに置いたものを片付ける（残すと、同じ名前でやり直したとき「既に中身があります」で弾かれる）
+    const createdNew = !fs.existsSync(target);
+    const cleanupTarget = () => {
+      try {
+        if (createdNew) { fs.rmSync(target, { recursive: true, force: true }); return; }
+        fs.readdirSync(target).filter((f) => f !== '.DS_Store')
+          .forEach((f) => fs.rmSync(path.join(target, f), { recursive: true, force: true }));
+      } catch { /* 片付けに失敗しても元のエラーを返す */ }
+    };
     try {
       fs.mkdirSync(target, { recursive: true });
       // 雛形（src・astro.config.mjs・package.json）を置く
@@ -727,23 +880,32 @@ const handleApi = async (req, res, url) => {
         const npmBin = process.platform === 'win32' ? 'npm.cmd' : 'npm';
         const npmBeside = path.join(path.dirname(process.execPath), npmBin);
         const npm = fs.existsSync(npmBeside) ? npmBeside : npmBin;
+        // キャッシュは学習者の ~/.npm ではなくアプリ専用の場所を使う。過去に sudo npm を使ったPCでは
+        // ~/.npm に root 所有のファイルが残っていて EACCES で失敗する（2026-11-15 テスターのMacで発生）
+        const npmCache = path.join(ROOT, '.npm-cache');
         try {
-          execFileSync(npm, ['install', '--no-audit', '--no-fund'], {
+          execFileSync(npm, ['install', '--no-audit', '--no-fund', '--cache', npmCache], {
             cwd: target, shell: process.platform === 'win32', windowsHide: true,
             timeout: 10 * 60 * 1000, stdio: 'pipe', env: childEnv(),
           });
           deps = 'installed';
         } catch (e) {
           const detail = (e.stderr || e.stdout || '').toString().trim().slice(-400);
-          sendJson(res, 500, {
-            error: `必要なパッケージを用意できませんでした。ネットにつながっているか確かめて、もう一度お試しください。\n${detail}`,
-          });
+          cleanupTarget();
+          let hint = 'もう一度お試しください。';
+          if (/ENOTFOUND|ETIMEDOUT|ECONNRESET|ECONNREFUSED|EAI_AGAIN|network/i.test(detail)) {
+            hint = 'ネットにつながっているか確かめて、もう一度お試しください。';
+          } else if (/EACCES|EPERM/.test(detail)) {
+            hint = 'パソコンのファイルの権限で止まりました。作る場所を変える（例: デスクトップの中）と通ることがあります。';
+          }
+          sendJson(res, 500, { error: `必要なパッケージを用意できませんでした。${hint}\n${detail}` });
           return;
         }
       }
       setWorkspaceDir(target);
       sendJson(res, 200, { portfolioDir: target, deps });
     } catch (e) {
+      cleanupTarget();
       sendJson(res, 500, { error: `作成に失敗しました: ${e.message}` });
     }
     return;

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>プレビュー | Astro学習支援AI</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="study-page">
+
+<section class="card card-preview" style="margin:16px; flex:1;">
+  <div class="preview-head">
+    <h2 id="preview-heading" class="card-label card-label--accent">プレビュー</h2>
+    <div class="preview-tools">
+      <button type="button" class="btn btn-ghost btn-sm" id="ref-toggle-btn" title="完成イメージと自分のコードを切り替え">完成イメージ</button>
+      <button type="button" class="btn btn-ghost btn-sm" id="preview-reload-btn">再読み込み</button>
+    </div>
+  </div>
+  <div class="preview-frame-wrap">
+    <iframe id="preview-frame" title="プレビュー"></iframe>
+  </div>
+</section>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const port = Number(params.get('port')) || Number(localStorage.getItem('previewPort')) || 4321;
+  const path = params.get('path') || '/';
+  const liveUrl = `http://localhost:${port}${path}`;
+  let showingReference = params.get('mode') === 'reference';
+
+  const frame = document.getElementById('preview-frame');
+  const heading = document.getElementById('preview-heading');
+  const toggleBtn = document.getElementById('ref-toggle-btn');
+  const reloadBtn = document.getElementById('preview-reload-btn');
+
+  const render = () => {
+    frame.src = showingReference ? 'reference.html' : liveUrl;
+    heading.textContent = showingReference ? '完成イメージ' : 'プレビュー';
+    toggleBtn.textContent = showingReference ? '自分のコード' : '完成イメージ';
+    toggleBtn.classList.toggle('is-active', showingReference);
+    document.title = (showingReference ? '完成イメージ' : 'プレビュー') + ' | Astro学習支援AI';
+  };
+
+  toggleBtn.addEventListener('click', () => {
+    showingReference = !showingReference;
+    render();
+  });
+  reloadBtn.addEventListener('click', () => {
+    frame.src = frame.src;
+  });
+
+  render();
+</script>
+</body>
+</html>

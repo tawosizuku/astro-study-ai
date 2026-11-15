@@ -8,6 +8,8 @@
   --accent: #ff5d01;
   --accent-soft: #fff0e6;
   --accent-deep: #d14a00;
+  --accent-hover: #d14a00;
+  --concept-bg: #eef2ff;
   --navy: #161d38;
   --navy-2: #232b4e;
   --success: #2e9e6b;
@@ -18,6 +20,25 @@
   --font-head: 'M PLUS Rounded 1c', 'Yu Gothic', sans-serif;
   --font-body: 'Noto Sans JP', 'Yu Gothic', sans-serif;
   --font-code: Consolas, 'Courier New', monospace;
+}
+
+/* ダークモード: トークンの差し替えのみ（配色の構造はライトと同じ）。
+   切り替えUIは置かず、OS側のダーク/ライト設定にそのまま追従する */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ground: #14161f;
+    --surface: #1d2030;
+    --ink: #e9ebf3;
+    --muted: #9aa2bd;
+    --line: #343a52;
+    --accent-soft: #3a2414;
+    --accent-deep: #ffb27a;
+    --concept-bg: #1d2440;
+    --success: #4ecb96;
+    --success-soft: #15291f;
+    --danger: #ff6b82;
+    --danger-soft: #341720;
+  }
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -54,12 +75,6 @@ button, select, input, textarea { font-family: inherit; }
 }
 .brand-name { font-family: var(--font-head); font-weight: 800; font-size: 19px; letter-spacing: 0.02em; }
 .brand-tag { font-size: 12px; color: #aeb6cd; }
-.topbar-controls { display: flex; align-items: center; gap: 10px; }
-.topbar-controls input {
-  font-size: 13px; padding: 7px 10px; border-radius: 9px;
-  border: 1px solid var(--navy-2); background: var(--navy-2); color: #fff;
-}
-.topbar-controls input { width: 240px; }
 .btn-quiet {
   font-size: 12px; padding: 7px 12px; border-radius: 9px; border: 1px solid #3a4468;
   background: transparent; color: #aeb6cd; cursor: pointer;
@@ -144,13 +159,13 @@ button, select, input, textarea { font-family: inherit; }
 }
 /* 今回学ぶこと（概念ボックス） */
 .problem-concept {
-  background: #eef2ff;
+  background: var(--concept-bg);
   border-left: 3px solid var(--accent);
   border-radius: 0 8px 8px 0;
   padding: 10px 14px;
   font-size: 13.5px;
   line-height: 1.7;
-  color: #2d3361;
+  color: var(--ink);
   margin-bottom: 10px;
   white-space: pre-wrap; /* concept の \n\n（段落）や ①②③ の区切りをそのまま見せる */
 }
@@ -193,7 +208,7 @@ button, select, input, textarea { font-family: inherit; }
   gap: 8px;
   align-items: flex-start;
   line-height: 1.7;
-  color: #2d3361;
+  color: var(--ink);
   counter-increment: step;
 }
 .problem-steps li::before {
@@ -211,7 +226,25 @@ button, select, input, textarea { font-family: inherit; }
   flex-shrink: 0;
   margin-top: 3px;
 }
-.problem-desc { font-size: 14px; color: #454c63; white-space: pre-wrap; }
+.problem-desc { font-size: 14px; color: var(--ink); white-space: pre-wrap; }
+
+/* 問題生成中（復習問題・展示の苦手問題をAIが作っている間）は、画面全体をこれで覆う。
+   完成イメージ・いまのプレビューを含め、できあがったコードが一切映らないようにするため（2026-11-10） */
+.generating-screen {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 18px; background: var(--ground);
+}
+.generating-screen__spinner {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 4px solid var(--accent-soft); border-top-color: var(--accent);
+  animation: problem-generating-spin 0.8s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .generating-screen__spinner { animation-duration: 2s; }
+}
+@keyframes problem-generating-spin { to { transform: rotate(360deg); } }
+.generating-screen__text { font-family: var(--font-head); font-weight: 700; font-size: 16px; color: var(--ink); }
 .desc-code {
   background: var(--ground); border: 1px solid var(--line); border-radius: 8px;
   padding: 10px 12px; margin: 8px 0; font-family: var(--font-code); font-size: 12.5px;
@@ -227,14 +260,14 @@ button, select, input, textarea { font-family: inherit; }
   font-family: var(--font-head); font-weight: 700; font-size: 11.5px;
   letter-spacing: 0.06em; color: var(--accent-deep); margin-bottom: 6px;
 }
-.rf-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #454c63; }
+.rf-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink); }
 .rf-item code { font-family: var(--font-code); font-size: 12px; word-break: break-all; }
 .rf-mark { flex: none; width: 14px; text-align: center; font-size: 12px; color: var(--muted); }
 .rf-item.done .rf-mark { color: var(--success); }
 .rf-item.done code { color: var(--muted); text-decoration: line-through; }
 .rf-state { margin-left: auto; flex: none; font-size: 11px; color: var(--muted); white-space: nowrap; }
 .rf-item.done .rf-state { color: var(--success); }
-.rf-hint { font-size: 11.5px; color: #8a6a52; margin-top: 8px; line-height: 1.6; }
+.rf-hint { font-size: 11.5px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
 
 /* 展示用: VS Code のエクスプローラーで開くフォルダとファイルを木の形で見せる（2026-10-09） */
 .wf-path {
@@ -245,7 +278,7 @@ button, select, input, textarea { font-family: inherit; }
   margin: 12px 0; padding: 10px 12px;
   background: var(--ground); border: 1px solid var(--line); border-radius: 10px;
 }
-.wf-tree { list-style: none; margin: 0; padding: 0; font-family: var(--font-code); font-size: 12.5px; color: #454c63; }
+.wf-tree { list-style: none; margin: 0; padding: 0; font-family: var(--font-code); font-size: 12.5px; color: var(--ink); }
 .wf-tree .wf-tree { padding-left: 18px; }
 .wf-tree li { line-height: 1.75; }
 .wf-file { color: var(--accent-deep); font-weight: 700; }
@@ -259,7 +292,7 @@ button, select, input, textarea { font-family: inherit; }
 @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
 .btn:active { transform: translateY(1px); }
 .btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: var(--accent-deep); }
+.btn-primary:hover { background: var(--accent-hover); }
 .btn-primary:disabled { background: #f0b394; cursor: wait; transform: none; }
 .btn-ghost { background: var(--ground); color: var(--ink); border: 1px solid var(--line); }
 .btn-ghost:disabled { color: var(--muted); cursor: wait; }
@@ -283,13 +316,11 @@ button, select, input, textarea { font-family: inherit; }
   font-size: 12px; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 3px;
   font-family: var(--font-head);
 }
-.result-sec dd { font-size: 13.5px; color: #454c63; }
+.result-sec dd { font-size: 13.5px; color: var(--ink); }
 .sec-good { border-left-color: var(--success); }
 .sec-good dt { color: var(--success); }
-.sec-fix { border-left-color: var(--danger); }
-.sec-fix dt { color: var(--danger); }
-.sec-hint { border-left-color: var(--accent); }
-.sec-hint dt { color: var(--accent-deep); }
+.sec-fix { border-left-color: var(--accent); }
+.sec-fix dt { color: var(--accent-deep); }
 
 /* 苦手ノート */
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
@@ -405,10 +436,28 @@ button, select, input, textarea { font-family: inherit; }
 .home-setup__input {
   flex: 1 1 320px; min-width: 0; font-family: var(--font-code); font-size: 13.5px;
   padding: 10px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--ground);
+  color: var(--ink);
 }
 .home-setup__input:focus-visible { border-color: var(--accent); }
 .home-setup__status { font-size: 12.5px; color: var(--muted); line-height: 1.8; }
 .home-setup__status.is-error { color: var(--danger); }
+
+/* 初回のAI選択（Gemini / Claude Code） */
+.ai-choice-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.ai-choice-card {
+  flex: 1 1 260px; display: flex; gap: 10px; align-items: flex-start;
+  border: 1.5px solid var(--line); border-radius: 12px; padding: 14px;
+  cursor: pointer; background: var(--ground);
+}
+.ai-choice-card:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.ai-choice-card:has(input:disabled) { opacity: 0.55; cursor: not-allowed; }
+.ai-choice-card input[type="radio"] { margin-top: 3px; flex: none; }
+.ai-choice-card__body { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ai-choice-card__body strong { font-size: 14px; }
+.ai-choice-card__body input[type="password"] {
+  font-size: 13px; padding: 8px 10px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+}
 
 /* 決まったあとに、どこで作業しているかを見せる行 */
 .home-where {
@@ -444,7 +493,6 @@ button, select, input, textarea { font-family: inherit; }
 .hub-card__title {
   font-family: var(--font-head); font-weight: 800; font-size: 15.5px;
 }
-.hub-card__preview { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
 
 /* デモ用リセット。目立たせず、でも迷わず見つかる位置に置く */
 .home-reset {
@@ -619,7 +667,9 @@ body.study-page { height: 100vh; overflow: hidden; display: flex; flex-direction
 .icon-btn:hover { border-color: var(--accent); }
 .preview-frame-wrap {
   flex: 1; min-height: 0; border: 1px solid var(--line); border-radius: 10px;
-  overflow: hidden; background: #fff; position: relative; }
+  /* プレビュー枠は中に表示するサイト（my-portfolio）が常に白背景前提なので、
+     ダークモードでも --surface を使わず白固定にする（2026-11-10） */
+  overflow: hidden; background: #ffffff; position: relative; }
 #preview-frame { display: block; width: 100%; height: 100%; border: 0; }
 /* プレビューが止まっているときに枠へ重ねる案内。真っ白のまま放置しないため */
 .preview-down {
@@ -690,6 +740,46 @@ body.study-page { height: 100vh; overflow: hidden; display: flex; flex-direction
 }
 .weak-meta { font-size: 11px; color: var(--muted); margin-top: 6px; }
 .weak-card__cta-row { display: flex; justify-content: flex-end; margin-top: 6px; }
+/* ---------- 設定ページ ---------- */
+.settings-row { display: flex; gap: 8px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+.settings-row input {
+  flex: 1 1 260px; font-size: 14px; padding: 9px 12px; border-radius: 9px;
+  border: 1px solid var(--line); background: var(--ground); color: var(--ink);
+}
+.settings-row input:focus { border-color: var(--accent); outline: none; }
+.settings-toggle-row {
+  display: flex; align-items: center; gap: 8px; margin-top: 16px;
+  font-size: 13.5px; color: var(--ink);
+}
+.settings-toggle-row input:disabled + span { color: var(--muted); }
+.claude-status {
+  display: flex; align-items: center; gap: 8px; margin-top: 12px;
+  font-size: 13.5px; color: var(--muted);
+}
+.claude-status__dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); flex: none; }
+.claude-status--ok .claude-status__dot { background: var(--success); }
+.claude-status--ok .claude-status__dot, .claude-status--ok #claude-status-text { color: var(--success); }
+.claude-status--ok { color: var(--success); }
+.claude-status--err .claude-status__dot { background: var(--danger); }
+.claude-status--err { color: var(--danger); }
+#claude-recheck-btn { margin-top: 10px; }
+
+/* Claude Codeのインストール・ログイン案内（初回のAI選択と設定ページで共通） */
+.claude-setup-guide {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+  margin-top: 12px; padding: 14px; border: 1px dashed var(--line); border-radius: 12px;
+  background: var(--surface);
+}
+.claude-setup-guide__lead { margin: 0; font-size: 13px; line-height: 1.8; color: var(--ink); }
+.claude-setup-guide__cmd {
+  max-width: 100%; overflow-x: auto; white-space: nowrap;
+  font-family: var(--font-code); font-size: 12px; color: var(--ink);
+  background: var(--ground); border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px;
+}
+.claude-setup-guide__msg { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.8; }
+.claude-setup-guide__msg.is-error { color: var(--danger); }
+.claude-setup-guide__note { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.8; }
+
 .danger-zone { border-color: #f4b8c3; }
 .btn-danger {
   flex: none; margin-top: 10px; padding: 10px 20px; font-size: 13px;
@@ -699,6 +789,11 @@ body.study-page { height: 100vh; overflow: hidden; display: flex; flex-direction
 
 /* ---------- ログイン（Google） ---------- */
 .auth-area { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.shutdown-note {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-head); font-size: 18px; color: var(--ink); background: var(--ground);
+  text-align: center; padding: 24px;
+}
 .auth-user { font-size: 12.5px; color: #dfe3f0; }
 .auth-gate {
   position: fixed; inset: 0; z-index: 100;
@@ -735,7 +830,7 @@ body.study-page { height: 100vh; overflow: hidden; display: flex; flex-direction
 .editor-dialog {
   position: fixed; top: 72px; left: 50%; transform: translateX(-50%);
   z-index: 500;
-  background: var(--surface); border: 1px solid var(--border);
+  background: var(--surface); border: 1px solid var(--line);
   border-radius: 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.28);
   padding: 20px 24px;
   opacity: 0; transition: opacity 0.25s ease;
@@ -744,7 +839,7 @@ body.study-page { height: 100vh; overflow: hidden; display: flex; flex-direction
 .editor-dialog.is-visible { opacity: 1; pointer-events: auto; }
 .editor-dialog.is-hidden { opacity: 0; pointer-events: none; }
 .editor-dialog-inner { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-.editor-dialog-label { font-size: 13.5px; color: var(--text-muted); white-space: nowrap; margin: 0; }
+.editor-dialog-label { font-size: 13.5px; color: var(--muted); white-space: nowrap; margin: 0; }
 .editor-dialog-btns { display: flex; gap: 8px; }
 .editor-dialog-btns .btn { font-size: 13px; padding: 7px 18px; }
 
@@ -835,9 +930,84 @@ details[open] .answer-summary::before { content: '▼  '; }
   letter-spacing: 0.03em;
   transition: color 0.15s, background 0.15s, border-color 0.15s;
 }
-.section-tab:hover { color: var(--fg); }
+.section-tab:hover { color: var(--ink); }
 .section-tab.is-active {
   color: #fff;
   background: var(--accent);
   border-color: var(--accent);
+}
+
+/* ---------- ホームのミニツアー（スポットライト） ---------- */
+/* 暗幕は4枚で対象を囲む。対象の上には何も重ねないので、クリックはそのまま本来の要素に届く。
+   z-index はエディター選択ダイアログ(500)より上、ログインゲート(100)より上に置く */
+.tour-panel {
+  position: fixed;
+  z-index: 900;
+  background: rgba(16, 20, 38, 0.72);
+  cursor: not-allowed;
+}
+.tour-ring {
+  position: fixed;
+  z-index: 901;
+  border-radius: 12px;
+  pointer-events: none;           /* ここを通してクリックを対象へ届ける */
+  box-shadow: 0 0 0 3px var(--accent), 0 0 22px 6px rgba(255, 93, 1, 0.45);
+  transition: top 0.2s ease, left 0.2s ease, width 0.2s ease, height 0.2s ease;
+}
+/* 枠の外を押したときに震わせて「そこじゃない」と伝える */
+.tour-ring.is-nudge { animation: tour-nudge 0.4s ease; }
+@keyframes tour-nudge {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+
+.tour-caption {
+  position: fixed;
+  z-index: 902;
+  max-width: 340px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px 20px 16px;
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.3);
+}
+.tour-caption__step {
+  font-family: var(--font-head);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin: 0 0 6px;
+}
+.tour-caption__text {
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--ink);
+  margin: 0;
+}
+.tour-caption__hint {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 10px 0 0;
+}
+.tour-caption__btn { margin-top: 14px; }
+.tour-caption__skip {
+  display: block;
+  margin: 12px 0 0;
+  padding: 0;
+  font-size: 12px;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.tour-caption__skip:hover { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-ring { transition: none; }
+  .tour-ring.is-nudge { animation: none; }
 }

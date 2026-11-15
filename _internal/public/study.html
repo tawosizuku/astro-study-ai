@@ -31,15 +31,16 @@
     <a href="roadmap.html" class="active" aria-current="page">学習の道のり</a>
     <a href="notebook.html">苦手ノート</a>
     <a href="glossary.html">用語集</a>
+    <a href="settings.html">設定</a>
   </nav>
-  <div class="topbar-controls">
-    <label class="use-claude-label" title="チェックするとGeminiキー無しで、このPCのClaudeで採点します（ローカルモードまたはログインが必要）">
-      <input id="use-claude" type="checkbox" />
-      <span>Claudeで採点</span>
-    </label>
-    <input id="gemini-key" type="password" placeholder="Gemini APIキー" aria-label="Gemini APIキー" />
-  </div>
 </header>
+
+<!-- 復習問題・苦手問題をAIが作っている間、画面全体を覆う。完成イメージも含め、
+     できあがったコードが一切映らないようにするため（2026-11-10） -->
+<div id="generating-screen" class="generating-screen" hidden>
+  <div class="generating-screen__spinner" aria-hidden="true"></div>
+  <p id="generating-screen-text" class="generating-screen__text">問題を作っています…</p>
+</div>
 
 <!-- 画面全体はスクロールさせない。もんだい・AI先生の中身だけが、それぞれの枠内でスクロールする -->
 <main class="board board-study" id="study-board">
@@ -73,11 +74,10 @@
       <h2 id="result-heading" class="card-label card-label--accent">AI先生から</h2>
       <div class="scroll-area">
         <div id="verdict" class="verdict" hidden></div>
-        <div id="result-empty" class="empty-note">提出すると、ここに「よかったところ」「なおすところ」「ヒント」が届きます。</div>
+        <div id="result-empty" class="empty-note">提出すると、ここに「よかったところ」「ヒント」が届きます。</div>
         <dl id="result-sections" class="result-sections" hidden>
           <div class="result-sec sec-good"><dt>よかったところ</dt><dd id="res-good"></dd></div>
-          <div class="result-sec sec-fix"><dt>なおすところ</dt><dd id="res-fix"></dd></div>
-          <div class="result-sec sec-hint"><dt>ヒント</dt><dd id="res-hint"></dd></div>
+          <div class="result-sec sec-fix"><dt>ヒント</dt><dd id="res-fix"></dd></div>
         </dl>
       </div>
     </section>

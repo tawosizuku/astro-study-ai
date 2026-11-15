@@ -17,10 +17,17 @@ Astro でポートフォリオサイトを1つ作りながら学ぶ道具です�
 |---|---|---|
 | **Node.js 22.5 以上** | この道具と Astro を動かすため | https://nodejs.org （LTS版でOK） |
 | **VS Code** | コードを書くため | https://code.visualstudio.com |
-| **Gemini APIキー** | AIに採点してもらうため（無料枠あり） | https://aistudio.google.com/apikey |
+| **Gemini APIキー**（下記のAI選択でClaude Codeを使う場合は不要） | AIに採点してもらうため（無料枠あり） | https://aistudio.google.com/api-keys |
 
 Node.js が入っているかは、ターミナル（Windowsはコマンドプロンプト）で `node -v` と打つと分かります。
 `v22.5.0` 以上の数字が出ればOKです。
+
+> **すでに Claude Code を使っている方へ**: 初回起動時に「採点に使うAIを選ぶ」画面が出るので、
+> そこでClaude Codeを選べばGemini APIキーなしで使えます（ClaudeのPro以上のプランが必要。無料プランでは不可）。
+> Claudeの**アプリだけでは使えません**。ターミナル用のClaude Code（`claude` コマンド）が要ります。
+> 入っていない・ログインしていない場合は、その画面に出る「Claude Codeを入れる」「Claudeにログイン」ボタンから
+> ターミナルが開いて公式の手順が実行され、終わると自動で検出されます。
+> どちらを使うかはあとから設定ページ（`settings.html`）でいつでも変更できます。
 
 ## 2. ダウンロードする
 
@@ -50,8 +57,10 @@ git を使わない場合は、GitHub の緑色の「Code」ボタン →「Down
 1. **プロジェクトを作る場所を決める** — 画面の案内にしたがって、
    ポートフォリオを作るフォルダを選びます（例: デスクトップの中）。
    必要なファイル一式がそこに用意されます。初回はパッケージの取得にネット接続が要ります。
-2. **Gemini APIキーを入れる** — 学習画面の右上に入力欄があります。
-   キーはブラウザからGoogleへ直接送られ、**このサーバーには保存も送信もされません**。
+2. **採点に使うAIを選ぶ** — 続けて出る画面で、GeminiかClaude Codeのどちらを使うか選びます。
+   Geminiを選ぶ場合はここでAPIキーを入れます（キーはブラウザからGoogleへ直接送られ、
+   **このサーバーには保存も送信もされません**）。Claude Codeがこのパソコンで使える状態なら
+   自動で検出され、キー入力なしで選べます。あとから `settings.html`（ナビの「設定」）で変更できます。
 
 ## 5. 2回目からは
 
@@ -65,6 +74,7 @@ git を使わない場合は、GitHub の緑色の「Code」ボタン →「Down
 | Mac で「開発元が未確認」と出る | ファイルを右クリック →「開く」→「開く」 |
 | プレビューが真っ白 | 学習画面の「プレビューを起動」を押してください |
 | 「利用上限に達しました」と出る | Gemini の無料枠の上限です。時間をおいてからお試しください |
+| 「Claudeで採点」が失敗する | 設定ページの「Claude Code 連携」で状態を確認し、出ているボタンからインストール・ログインしてください（ターミナルで `claude auth status` でも確認できます） |
 
 学習の記録はすべて自分のPCの中（`data.db`）にあります。外部には送られません。
 
@@ -74,9 +84,20 @@ git を使わない場合は、GitHub の緑色の「Code」ボタン →「Down
 
 ここから下は、この道具を**開発する人**のための内部資料です。使うだけなら読む必要はありません。
 
+**フォルダ構成（2026-11-11変更）**: 起動フォルダ（学習者に見える場所）には `README.md` /
+`START-Mac.app` / `START-Windows.bat` だけを置き、`server.js`・`db.js`・`problems.json`・
+`public/`・`scripts/`・`workspace/` 等のアプリ本体一式は全部 `_internal/` の中にまとめた。
+実行時データ（`data.db`・`session-secret.local`・`workspace-path.local`・`launcher.log`・
+`exhibit-log.jsonl`）や自動ダウンロードする `_node/` もすべて `_internal/` の中に作られる
+（これらは `server.js`・`db.js` の `__dirname` 基準のパス解決に従うだけなので、コード側の変更は不要
+だった）。`_internal/` はMacでは起動スクリプトが `chflags hidden` を付け、Windowsは以前からの
+`attrib +h` で、どちらもFinder/エクスプローラーの既定表示では見えないようにしている。
+以下のコマンド例は、すべて `_internal/` の中で実行する前提に読み替えること。
+
 ## 起動
 
 ```bash
+cd _internal
 node server.js
 # → http://localhost:8787
 ```
@@ -86,6 +107,7 @@ node server.js
 Googleログインを使う構成（卒研の報告書用に残している）で動かす場合だけ `LOCAL_MODE=0` を付ける:
 
 ```bash
+cd _internal
 LOCAL_MODE=0 GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com node server.js
 ```
 
@@ -95,6 +117,7 @@ LOCAL_MODE=0 GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com node server.js
 `/api/claude`（このサーバー上で `claude` CLI を実行する）等を叩ける状態になる。
 
 ```bash
+cd _internal
 PUBLIC_MODE=1 GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com node server.js
 ```
 
@@ -142,6 +165,7 @@ PUBLIC_MODE=1 GOOGLE_CLIENT_ID=xxxxx.apps.googleusercontent.com node server.js
 ## 類題生成の回帰テスト
 
 ```bash
+cd _internal
 GEMINI_API_KEY=xxxx npm run test:generation
 ```
 
@@ -160,9 +184,12 @@ GEMINI_API_KEY=xxxx npm run test:generation
 
 | プロバイダ | 用途 | 備考 |
 |-----------|------|------|
-| Gemini API | 採点・類題生成のすべて | BYOK方式。キーはブラウザ→Google直送でサーバーを経由しない（本番設計どおり） |
+| Gemini API | 採点・類題生成（既定） | BYOK方式。キーはブラウザ→Google直送でサーバーを経由しない（本番設計どおり） |
+| Claude Code（任意・2026-11-11追加） | 採点（学習画面で「Claudeで採点」を選んだ場合） | 学習者のPCにインストール・ログイン済みの `claude` CLIをサーバーがspawnする。`/api/claude/status`（`claude auth status --json`）で自動検出し、使えないときはチェックを無効化する。類題生成は対象外（Gemini固定） |
 
 2026-09-24にローカルAI（Ollama / `qwen3-coder:30b`）のコードをすべて削除し、Gemini一本にした。プロバイダ切替のプルダウンも廃止し、学習ページ右上はGemini APIキーの入力欄だけになっている。
+2026-11-11にClaude Codeでの採点を選択肢として復活（初回起動時のAI選択画面・`settings.html`）。ただしこれはGeminiの代替であり、プルダウン相当のUIが完全に復活したわけではない。
+2026-11-14にインストール・ログインの案内を追加。未インストール/未ログインのとき画面のボタンから `/api/claude/open-terminal` を呼ぶと、ターミナル（Macは `.command`、WindowsはPowerShell）が開いて公式コマンド（`curl -fsSL https://claude.ai/install.sh | bash` / `irm https://claude.ai/install.ps1 | iex`、ログインは `claude auth login --claudeai`）を実行する。完了は画面が3秒おきに `/api/claude/status` を見て自動検出する。`claude` の場所は「見つからない」をキャッシュせず、`~/.local/bin` も直接見る。
 
 ## 画面まわりの仕様（2026-09-24変更）
 
@@ -251,12 +278,14 @@ GEMINI_API_KEY=xxxx npm run test:generation
 
 ## ファイル構成
 
-- `server.js` — 依存ゼロのNodeサーバー（静的配信 / Googleログイン / DB読み書き・克服/進捗ロジック）
-- `db.js` — SQLite永続化層（`node:sqlite` 使用。`memory.json` と同じ形のオブジェクトで読み書きし、server.js側のロジックは変更なし。旧`memory.json`が残っていれば初回起動時に自動移行）
-- `problems.json` — 固定22ステップ・10フェーズ（ポートフォリオサイトを1つ作り上げる連続構成。タグ語彙11種すべてカバー。answerPatterns=答え漏れマスク用の正規表現つき。2026-09-16に10ステップへ再設計、2026-10-19に肝を追加して20ステップへ、2026-10-27にアイランド(client:)と画面遷移を足して22ステップへ）。各ステップの`starter`は`{files, newFiles}`のオブジェクト形式（`files`=すでに存在するファイル、`newFiles`=学習者が自分で作成する必要があるファイルの雛形。もんだい側に「このステップで自分で作るファイル」チェックリストとして表示され、拡張がVS Code側に同じ雛形を配置する）
-- `public/` — `index.html` / `study.html` / `notebook.html` ＋ `style.css`（デザイントークン） / `common.js` / `home.js` / `study.js` / `notebook.js`（`study-preview.js`・`preview-window.*`・`webcontainer-connect.html` は2026-09-24に、`webcontainer-demo.*`・`vendor/webcontainer/` は2026-10-27に削除）
-- `data.db` — 弱点・履歴・クリア状態（SQLite。自動生成。コミット対象外）
-- `memory.json` — 旧形式（自動生成。存在する場合は初回起動時にdata.dbへ移行される。コミット対象外）
+トップレベルは `README.md` / `START-Mac.app` / `START-Windows.bat` のみ。以下は全部 `_internal/` の中（2026-11-11〜）。
+
+- `_internal/server.js` — 依存ゼロのNodeサーバー（静的配信 / Googleログイン / DB読み書き・克服/進捗ロジック）
+- `_internal/db.js` — SQLite永続化層（`node:sqlite` 使用。`memory.json` と同じ形のオブジェクトで読み書きし、server.js側のロジックは変更なし。旧`memory.json`が残っていれば初回起動時に自動移行）
+- `_internal/problems.json` — 固定23ステップ・11フェーズ（ポートフォリオサイトを1つ作り上げる連続構成。タグ語彙11種すべてカバー。answerPatterns=答え漏れマスク用の正規表現つき。2026-09-16に10ステップへ再設計、2026-10-19に肝を追加して20ステップへ、2026-10-27にアイランド(client:)と画面遷移を足して22ステップへ、2026-10-29にボタンの部品化(Btn.astro)を足して23ステップへ）。各ステップの`starter`は`{files, newFiles}`のオブジェクト形式（`files`=すでに存在するファイル、`newFiles`=学習者が自分で作成する必要があるファイルの雛形。もんだい側に「このステップで自分で作るファイル」チェックリストとして表示され、拡張がVS Code側に同じ雛形を配置する）
+- `_internal/public/` — `index.html` / `study.html` / `notebook.html` / `settings.html`（2026-11-11追加。Gemini/Claudeの設定確認） ＋ `style.css`（デザイントークン） / `common.js` / `home.js` / `study.js` / `notebook.js` / `settings.js`（`study-preview.js`・`preview-window.*`・`webcontainer-connect.html` は2026-09-24に、`webcontainer-demo.*`・`vendor/webcontainer/` は2026-10-27に削除）
+- `_internal/data.db` — 弱点・履歴・クリア状態（SQLite。自動生成。コミット対象外）
+- `_internal/memory.json` — 旧形式（自動生成。存在する場合は初回起動時にdata.dbへ移行される。コミット対象外）
 
 ## 設計書
 

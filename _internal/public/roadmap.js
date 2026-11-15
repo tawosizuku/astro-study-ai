@@ -128,6 +128,34 @@ const renderRoadmap = (state) => {
   });
 };
 
+// このページを初めて開いたときだけ出す案内
+const ROADMAP_TOUR_SEEN_KEY = 'roadmapTourSeen';
+
+const ROADMAP_TOUR_STEPS = [
+  {
+    target: '#section-tabs',
+    text: 'ここで学ぶ内容ごとに表示を絞り込めます。「すべて」のほか、①〜⑩のセクションを選ぶと、見たい範囲だけ表示できます。',
+  },
+  {
+    // ノード自体には「押すとその問題へ移動する」実際の挙動が付いているので、ツアーの
+    // クリックで止められない（blockDefaultはリンクの既定動作しか止められない）。
+    // 誤ってタップして始まってしまわないよう、対象を指さず文章だけで説明する
+    text: 'いまの自分の位置は★マークで示されます。クリックすると、その問題からすぐに始められます。合格すると道が先にのびていきます。迷ったらいつでもこのページに戻って、続きを確認してください。',
+    buttonLabel: 'とじる',
+  },
+];
+
+const maybeStartRoadmapTour = () => {
+  let seen = false;
+  try {
+    seen = localStorage.getItem(ROADMAP_TOUR_SEEN_KEY) === '1';
+    if (!seen) localStorage.setItem(ROADMAP_TOUR_SEEN_KEY, '1');
+  } catch { /* localStorageが使えない環境では案内を出さないだけ */ }
+  if (seen || typeof window.startSpotlightTour !== 'function') return;
+  // ノードが描画されてから測りたい。先に出すと枠がずれる
+  requestAnimationFrame(() => window.startSpotlightTour(ROADMAP_TOUR_STEPS));
+};
+
 let _state = null;
 let _activePhase = '';
 
@@ -143,6 +171,7 @@ window.onAuthReady = () => {
   getState().then((state) => {
     _state = state;
     renderRoadmapFiltered();
+    maybeStartRoadmapTour();
   });
 
   document.getElementById('section-tabs').addEventListener('click', (e) => {

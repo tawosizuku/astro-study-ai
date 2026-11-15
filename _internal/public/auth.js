@@ -43,16 +43,30 @@ const buildGate = () => {
   return gate;
 };
 
-const buildAuthArea = (user) => {
+// ローカルモード（この端末だけの単一ユーザー）ではアカウント名を出す意味が無く、
+// 「ログアウト」もこの道具を終了する操作に読み替える（押すとサーバープロセスごと終了する）
+const buildAuthArea = (user, localMode) => {
   const topbar = document.querySelector('.topbar');
   if (!topbar || topbar.querySelector('.auth-area')) return;
   const area = document.createElement('div');
   area.className = 'auth-area';
-  const label = user.email || user.displayName || 'ログイン中';
-  area.innerHTML = `<span class="auth-user">${label}</span><button class="btn-quiet" id="logout-btn">ログアウト</button>`;
+  const label = localMode ? '' : (user.email || user.displayName || 'ログイン中');
+  const btnLabel = localMode ? 'アプリを終了' : 'ログアウト';
+  area.innerHTML = `${label ? `<span class="auth-user"></span>` : ''}<button class="btn-quiet" id="logout-btn">${btnLabel}</button>`;
+  if (label) area.querySelector('.auth-user').textContent = label;
   topbar.appendChild(area);
-  area.querySelector('#logout-btn').addEventListener('click', async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
+  area.querySelector('#logout-btn').addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    if (localMode) btn.textContent = '終了しています…';
+    await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+    if (localMode) {
+      // サーバープロセスが終了するので、呼び出し元ページはもう機能しない。
+      // リロードすると「サーバーに繋がらない」エラーになるだけなので、代わりに終了を伝える
+      document.body.innerHTML =
+        '<div class="shutdown-note">アプリを終了しました。このタブは閉じて大丈夫です。</div>';
+      return;
+    }
     location.reload();
   });
 };
@@ -139,7 +153,7 @@ if (location.pathname !== '/login.html') {
     const config = await configRes.json();
     const me = await meRes.json();
     if (me.user) {
-      buildAuthArea(me.user);
+      buildAuthArea(me.user, config.localMode);
       if (window.onAuthReady) window.onAuthReady();
       return;
     }

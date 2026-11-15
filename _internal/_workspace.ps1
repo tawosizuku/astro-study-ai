@@ -1,8 +1,13 @@
-# $AppDir = astro-study-ai/ (parent of _internal/)
+# $AppDir = astro-study-ai/ (parent of _internal/). Only used for the desktop shortcut below,
+# which must point at START-Windows.bat sitting at the top level.
 $AppDir = Split-Path $PSScriptRoot -Parent
+# $ServerDir = _internal/ (this script's own folder). server.js, its dependencies, and all
+# runtime data now live here, so the top-level folder stays down to just the two launchers
+# and the README (2026-11-11 folder cleanup).
+$ServerDir = $PSScriptRoot
 
 # ---- resolve Node.js (portable > system > auto-download) ----
-$nodeDir = Join-Path $AppDir "_node"
+$nodeDir = Join-Path $ServerDir "_node"
 $nodeExe = Join-Path $nodeDir "node.exe"
 $npmCmd  = Join-Path $nodeDir "npm.cmd"
 
@@ -84,7 +89,7 @@ if ($port8787Busy) {
     # Put the Node folder first on PATH. With the portable Node in _node\ this is required,
     # otherwise node_modules\.bin\astro cannot find node and the preview fails to start.
     $env:PATH = (Split-Path $nodeExe -Parent) + ';' + $env:PATH
-    Start-Process -WindowStyle Minimized -FilePath $nodeExe -ArgumentList "`"$AppDir\server.js`"" -WorkingDirectory $AppDir
+    Start-Process -WindowStyle Minimized -FilePath $nodeExe -ArgumentList "`"$ServerDir\server.js`"" -WorkingDirectory $ServerDir
 }
 
 # ---- wait until the server answers, so the browser does not open on a dead port ----

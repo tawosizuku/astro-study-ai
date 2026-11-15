@@ -84,7 +84,7 @@ const GLOSSARY = [
       },
       {
         term: '配列 + map()', en: '.map()',
-        summary: '同じ形のものを**くり返し並べる**書き方。データを配列（リスト）にしておき、`配列.map((項目) => …)` で1つずつHTMLに変換します。ナビのリンクや作品カードのように「数が増えても同じ形」を作るのに使います。',
+        summary: '同じ形のものを**くり返し並べる**書き方。データを配列（リスト）にしておき、`配列.map((項目) => …)` で1つずつHTMLに変換します。ナビのリンクや作品カードのように「数が増えても同じ形」を作るのに使います。\n\n`map()` 自体は**JavaScriptの機能**で、Astro専用ではありません（React等でも同じ書き方をします）。Astroの役目は、その結果を `{ }` でHTMLの中に埋め込めるところです。',
         example: '---\nconst links = [\n  { label: \'Home\', href: \'/\' },\n  { label: \'Works\', href: \'/#works\' },\n];\n---\n<nav>\n  {links.map((link) => <a href={link.href}>{link.label}</a>)}\n</nav>',
       },
     ],
@@ -131,16 +131,6 @@ const GLOSSARY = [
         term: '動的ルート', en: '[slug].astro / getStaticPaths',
         summary: 'ファイル名を `[slug].astro` のように `[ ]` で囲むと、**1つのファイルから複数ページ**を作れます。`getStaticPaths()` で「どのURLを作るか」を一覧で返し、各ページに渡すデータ（props）も指定します。作品が増えても、詳細ページのファイルは1つで済みます。',
         example: '// src/pages/works/[slug].astro\n---\nimport { getCollection } from \'astro:content\';\nexport async function getStaticPaths() {\n  const works = await getCollection(\'works\');\n  return works.map((entry) => ({\n    params: { slug: entry.slug },\n    props: { entry },\n  }));\n}\nconst { entry } = Astro.props;\nconst { Content } = await entry.render();\n---\n<h1>{entry.data.title}</h1>\n<Content />',
-      },
-    ],
-  },
-  {
-    phase: '画面遷移', tag: 'transition',
-    items: [
-      {
-        term: 'View Transitions', en: '<ViewTransitions />',
-        summary: '`BaseLayout` の `<head>` に `<ViewTransitions />` を1行置くと、**ページを移動しても全部を読み直さず、変わったところだけを差し替えます**。画面が白く点滅しなくなり、ヘッダーは置いたまま中身だけが入れ替わります。Astro本体に入っているので追加のインストールは不要です。対応していないブラウザでは、今までどおりの普通のページ移動になるだけで壊れません。',
-        example: '---\nimport { ViewTransitions } from \'astro:transitions\';\n---\n<html lang="ja">\n  <head>\n    <title>{title}</title>\n    <ViewTransitions />   \u2190 1行置くだけ\n  </head>\n  <body><slot /></body>\n</html>',
       },
     ],
   },

@@ -12,6 +12,7 @@ const GEN_SYSTEM = [
   '制約2: targetTags には、渡された「弱点履歴」に出てきたタグだけを入れます。履歴にないタグを入れてはいけません。',
   '制約3: answerPatterns には、正しい解答コードに現れるはずの特徴的な一部分を、JavaScriptの正規表現（文字列）として2〜4個入れます。この問題の正解を見た人が「これは正解の一部を隠すためのパターンだ」とわかる粒度にしてください（例: 変数宣言の一部、特定のプロパティアクセスなど）。ヒント文の答え隠しに使うので、必ず生成してください。',
   '制約4: starter（雛形）は、1つのファイル src/pages/review.astro にそのまま貼れる、単体で表示できる小さなAstroページにします（必要なら先頭の `---`〜`---` フロントマターも含める）。別ファイルやコンポーネント分割は前提にせず、この1ファイルだけで完結させてください。',
+  '制約5: starter は学習者がまだ何も書いていない・直していない状態の雛形です。description では「ここが間違っています」のような既存コードへの指摘口調を使わず、「ここから何を書く／直すか」という、これからやる作業として説明してください。',
   '必ず次のJSONだけを出力してください:',
   '{"title": "問題タイトル", "description": "問題文（やることを番号付きで）", "starter": "解答欄の雛形コード",',
   ' "checkpoints": ["評価の観点を2〜4個"], "targetTags": ["狙った弱点タグ"], "answerPatterns": ["正解の一部を隠すための正規表現（文字列）"]}',
@@ -41,6 +42,13 @@ const validateGenerated = (generated, weakTags) => {
   if (typeof generated?.description !== 'string' || !generated.description.trim()) errors.push('description が文字列でない、または空');
   else if (looksChineseContaminated(generated.description)) errors.push('description に中国語混入の疑い（ひらがな無しの長い漢字列）');
   if (typeof generated?.starter !== 'string') errors.push('starter が文字列でない');
+  else if (/\bimport\s+[\s\S]*?\bfrom\s+['"]\.{1,2}\//.test(generated.starter)) {
+    // 制約4（1ファイルで完結）の違反を機械的に検知する。実在しない/実物と形の違う
+    // コンポーネントをimportして参照すると、学習者の実ファイルと噛み合わずランタイムエラーになるため
+    // （例: 実際のCard.astroはtitle/description/tags/hrefを要求するのに、生成側がimage propを渡して
+    //   Card内部の tags.map() が undefined.map() で落ちた事例が実際に発生した）
+    errors.push('starter が制約4に反して他ファイル（コンポーネント等）をimportしている。1ファイルのHTML/フロントマターだけで完結させる必要がある');
+  }
   if (!Array.isArray(generated?.checkpoints) || generated.checkpoints.length === 0) {
     errors.push('checkpoints が空、または配列でない');
   } else {

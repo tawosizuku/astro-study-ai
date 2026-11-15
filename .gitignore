@@ -12,6 +12,9 @@ node_modules/
 _node/
 
 # 依存パッケージのキャッシュ（153MB。無ければ npm install にフォールバックする）
-workspace/_deps/node_modules/
+_internal/workspace/_deps/node_modules/
+
+# npm のキャッシュ（学習者の ~/.npm の状態に左右されないようアプリ専用に置く）
+.npm-cache/
 
 .DS_Store

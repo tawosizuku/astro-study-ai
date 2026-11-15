@@ -2,22 +2,27 @@
 # Astro学習支援AI のランチャー。
 # サーバーが動いていなければ起動し、ブラウザでホームを開く。
 # この .app はリポジトリの prototypes/astro-study/ の中に置く前提で、
-# 自分の位置から server.js を探す（デスクトップにはエイリアス/シンボリックリンクを置く）。
+# 自分の位置から _internal/server.js を探す（デスクトップにはエイリアス/シンボリックリンクを置く）。
+# アプリ本体・依存・実行時データは全部 _internal/ の中にまとめてある（2026-11-11）。
+# ここ（起動フォルダ）に散らかって見えないようにするため。Finderでは隠しフォルダ扱いにする
 set -u
 PORT=8787
 
 # .app/Contents/MacOS/launch → astro-study/
 HERE="$(cd "$(dirname "$0")/../../.." && pwd)"
-LOG="$HERE/launcher.log"
+APP_DIR="$HERE/_internal"
+LOG="$APP_DIR/launcher.log"
+
+chflags hidden "$APP_DIR" 2>/dev/null || true
 
 notify () { osascript -e "display notification \"$1\" with title \"Astro学習支援AI\"" >/dev/null 2>&1; }
 fail () { osascript -e "display dialog \"$1\" with title \"Astro学習支援AI\" buttons {\"OK\"} default button 1 with icon stop" >/dev/null 2>&1; exit 1; }
 
-[ -f "$HERE/server.js" ] || fail "server.js が見つかりません。このアプリは prototypes/astro-study/ の中に置いてください。（探した場所: $HERE）"
+[ -f "$APP_DIR/server.js" ] || fail "_internal/server.js が見つかりません。このアプリは prototypes/astro-study/ の中に置いてください。（探した場所: $APP_DIR）"
 
 # node を探す。順に「前回ダウンロードした携帯版 → システム → 自動ダウンロード」。
 # Finderから起動するとPATHが最小限なので、よくある場所も直接見る
-NODE_DIR="$HERE/_node"
+NODE_DIR="$APP_DIR/_node"
 NODE=""
 [ -x "$NODE_DIR/bin/node" ] && NODE="$NODE_DIR/bin/node"
 if [ -z "$NODE" ]; then
@@ -59,7 +64,7 @@ fi
 
 # すでに動いていれば起動しない
 if ! curl -s -o /dev/null --max-time 2 "http://localhost:$PORT/index.html"; then
-  cd "$HERE" || fail "フォルダに移動できません: $HERE"
+  cd "$APP_DIR" || fail "フォルダに移動できません: $APP_DIR"
   # LOCAL_MODE=1 は必須。これが無いと server.js が 127.0.0.1 ではなく全ネットワーク面で
   # 待ち受け、同じWi-Fiの他人が /api/auth/guest でセッションを取って /api/claude などを
   # 叩けてしまう（2026-10-27 修正。Windows の start.bat は以前から設定済み）

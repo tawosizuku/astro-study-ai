@@ -9,11 +9,11 @@
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="style.css" />
 <style>
-  .gl-intro { font-size: 14px; color: #454c63; line-height: 1.9; }
+  .gl-intro { font-size: 14px; color: var(--muted); line-height: 1.9; }
   .gl-searchbar { margin: 18px 0 8px; }
   .gl-searchbar input {
     width: 100%; max-width: 420px; padding: 10px 14px; font-size: 14px;
-    border: 1px solid var(--line, #d9ddea); border-radius: 10px; background: var(--panel, #fff);
+    border: 1px solid var(--line); border-radius: 10px; background: var(--surface);
     color: inherit; font-family: inherit;
   }
   .gl-group { margin-top: 28px; }
@@ -31,7 +31,7 @@
   .gl-phase--routing { background: #3b73c4; }
 
   .gl-card {
-    background: var(--panel, #fff); border: 1px solid var(--line, #e7e3de);
+    background: var(--surface); border: 1px solid var(--line);
     border-radius: 14px; padding: 18px 20px; margin-bottom: 14px;
   }
   .gl-term {
@@ -44,7 +44,7 @@
     color: var(--accent, #6c5ce7); background: var(--accent-soft, #efebfc);
     padding: 2px 8px; border-radius: 6px;
   }
-  .gl-summary { font-size: 13.5px; color: #3a4063; line-height: 1.95; margin: 8px 0; }
+  .gl-summary { font-size: 13.5px; color: var(--ink); line-height: 1.95; margin: 8px 0; }
   .gl-summary code {
     font-family: var(--font-code, monospace); font-size: 12.5px;
     background: var(--ground, #f4f3fb); padding: 1px 5px; border-radius: 5px; color: var(--ink, #332);
@@ -73,6 +73,7 @@
     <a href="roadmap.html">学習の道のり</a>
     <a href="notebook.html">苦手ノート</a>
     <a href="glossary.html" class="active" aria-current="page">用語集</a>
+    <a href="settings.html">設定</a>
   </nav>
 </header>
 

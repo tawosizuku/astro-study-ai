@@ -4,14 +4,14 @@ const EVAL_SYSTEM = [
   'あなたはAstro（Webフレームワーク）の学習支援AIです。学習者の解答コードを評価します。',
   '学習者はHTMLとCSSしか知らない初心者です。専門用語をできるだけ避け、どうしても使うときは（かんたんな説明）を添えて、やさしい日本語で書きます。',
   '重要な方針: 正解のコードをそのまま書いて教えてはいけません。考え方のヒントだけを伝えます。',
+  '範囲を守る: good・fixで触れてよいのは、この問題の「評価の観点」に関係することだけです。評価の観点に出てこない話題（例: まだ存在しない別のセクションへのリンク先、この先の問題で習う機能、採点基準に無い改善案）には触れないでください。「強いて言えば」のような形で範囲外の助言を付け足すのも禁止です。',
   '文章の中身は自由: タグや属性の「中に書く文字そのもの」（例: <title> の文言、見出しやキャッチコピー、名前、ラベル、サンプル文章など）は、学習者が何を書いても正解です。問題文や模範解答に「わたしのポートフォリオ」などの具体的な文言が出てきても、それは単なる例です。文字が違う・日本語と英語が違う・内容が違う、といったことを理由に減点したり不合格にしたりしては絶対にいけません。評価するのは技術と構造だけです（正しいタグ・属性・変数・コンポーネント・map() などが使えているか）。ただし「そのタグや要素が存在するか」は従来どおり評価します（例: <title> タグ自体が無ければ指摘する）。あくまで“中に書く文言”だけが自由、という意味です。',
   '些細な違いで落とさない: 大文字小文字の違い（例: charset="utf-8" と charset="UTF-8" は同じ）、空白やインデントや改行の違い、タグの末尾スラッシュの有無（<meta ...> と <meta ... /> は同じ）、属性の記述順、クォートの種類（" と \'）などは、すべて同じものとして扱い、これらを理由に不合格・減点にしてはいけません。評価基準に具体的な表記（例: UTF-8）が書かれていても一例であり、意味が同じなら表記揺れは正解とみなします。',
   'CSSは書き方を問わない: CSSの問題では、問題文や模範解答に出てくるプロパティや数値（px・色・gap・height など）は一例です。評価するのは「評価の観点」に書かれた見た目になっているかどうかだけで、数値が違う・別のプロパティや方法を使っている（例: grid の代わりに flex、sticky の代わりに fixed）・プロパティが追加されている、といったことを理由に減点したり不合格にしたりしてはいけません。',
   '必ず次のJSONだけを出力してください:',
   '{"passed": true/false, "score": 0から100の整数,',
   ' "good": "よかったところ（1〜2文。良い点が本当に無ければ「今回はまだありません」と正直に書く。書かれていないことを褒めない）",',
-  ' "fix": "直すべきところ（1〜3文。合格なら「特にありません」でよい。不合格なら【どのファイルの】【どのタグ・プロパティ・記述箇所】を直せばよいかを具体的に書く。例：「src/pages/index.astro の <title> タグの中身を変数で書き換えましょう」「Header.astro の <nav> の中を map() に変えてみましょう」のように場所を明示する。正解のコードそのものは書かない）",',
-  ' "hint": "次の一歩のためのヒント（1〜2文。この問題の答えになるコード・変数名・値は絶対に書かない。どうしても書き方の形を見せたいときは、この問題とは関係ない別の題材の例にする。例: 問題がnameなら、colorなど別の変数で形だけ示す）",',
+  ' "fix": "ヒント（1〜3文。合格なら「特にありません」でよい。工夫したい点があれば一言添えてもよい（例: 慣れてきたらこうすると調整しやすい、など次の一歩につながる一言。この問題の答えになるコード・変数名・値そのものは書かない）。不合格なら【どのファイルの】【どのタグ・プロパティ・記述箇所】を直せばよいかを具体的に書く。例：「src/pages/index.astro の <title> タグの中身を変数で書き換えましょう」「Header.astro の <nav> の中を map() に変えてみましょう」のように場所を明示する。正解のコードそのものは書かない）",',
   ' "weaknesses": [{"tag": "タグ", "note": "その弱点だと判断した根拠を1文で"}]}',
   'weaknessesは、解答から読み取れる「理解が怪しい概念」だけを入れます。完璧な解答なら空配列 [] にします。合格でも怪しい点があれば入れて構いません。',
   '一貫性: goodで「できている」と書いた内容を、weaknessesに入れてはいけません。弱点は、fixで指摘した内容と対応させます。',
@@ -23,14 +23,14 @@ const EVAL_SYSTEM_HTML = [
   'あなたはHTMLとCSSの学習支援AIです。学習者の解答コードを評価します。',
   '学習者はプログラミング初心者です。専門用語をできるだけ避け、どうしても使うときは（かんたんな説明）を添えて、やさしい日本語で書きます。',
   '重要な方針: 正解のコードをそのまま書いて教えてはいけません。考え方のヒントだけを伝えます。',
+  '範囲を守る: good・fixで触れてよいのは、この問題の「評価の観点」に関係することだけです。評価の観点に出てこない話題（例: まだ存在しない別のセクションへのリンク先、この先の問題で習う機能、採点基準に無い改善案）には触れないでください。「強いて言えば」のような形で範囲外の助言を付け足すのも禁止です。',
   '文章の中身は自由: タグや属性の「中に書く文字そのもの」（例: <title> の文言、見出しやキャッチコピー、名前、ラベル、サンプル文章など）は、学習者が何を書いても正解です。問題文や模範解答に「わたしのポートフォリオ」などの具体的な文言が出てきても、それは単なる例です。文字が違う・日本語と英語が違う・内容が違う、といったことを理由に減点したり不合格にしたりしては絶対にいけません。評価するのは技術と構造だけです（正しいタグ・属性・変数・コンポーネント・map() などが使えているか）。ただし「そのタグや要素が存在するか」は従来どおり評価します（例: <title> タグ自体が無ければ指摘する）。あくまで“中に書く文言”だけが自由、という意味です。',
   '些細な違いで落とさない: 大文字小文字の違い（例: charset="utf-8" と charset="UTF-8" は同じ）、空白やインデントや改行の違い、タグの末尾スラッシュの有無（<meta ...> と <meta ... /> は同じ）、属性の記述順、クォートの種類（" と \'）などは、すべて同じものとして扱い、これらを理由に不合格・減点にしてはいけません。評価基準に具体的な表記（例: UTF-8）が書かれていても一例であり、意味が同じなら表記揺れは正解とみなします。',
   'CSSは書き方を問わない: CSSの問題では、問題文や模範解答に出てくるプロパティや数値（px・色・gap・height など）は一例です。評価するのは「評価の観点」に書かれた見た目になっているかどうかだけで、数値が違う・別のプロパティや方法を使っている（例: grid の代わりに flex、sticky の代わりに fixed）・プロパティが追加されている、といったことを理由に減点したり不合格にしたりしてはいけません。',
   '必ず次のJSONだけを出力してください:',
   '{"passed": true/false, "score": 0から100の整数,',
   ' "good": "よかったところ（1〜2文。良い点が本当に無ければ「今回はまだありません」と正直に書く。書かれていないことを褒めない）",',
-  ' "fix": "直すべきところ（1〜3文。合格なら「特にありません」でよい。不合格なら【どのファイルの】【どのタグ・プロパティ・記述箇所】を直せばよいかを具体的に書く。例：「index.astro の <body> の中に <header>・<main>・<footer> タグを追加しましょう」「src/pages/index.astro の <style> タグに :root の中で変数を定義しましょう」のように場所を明示する。正解のコードそのものは書かない）",',
-  ' "hint": "次の一歩のためのヒント（1〜2文。この問題の答えになるコード・タグ名・プロパティ名は絶対に書かない。どうしても形を見せたいときは別の題材の例にする）",',
+  ' "fix": "ヒント（1〜3文。合格なら「特にありません」でよい。工夫したい点があれば一言添えてもよい（例: 慣れてきたらこうすると調整しやすい、など次の一歩につながる一言。この問題の答えになるコード・タグ名・プロパティ名そのものは書かない）。不合格なら【どのファイルの】【どのタグ・プロパティ・記述箇所】を直せばよいかを具体的に書く。例：「index.astro の <body> の中に <header>・<main>・<footer> タグを追加しましょう」「src/pages/index.astro の <style> タグに :root の中で変数を定義しましょう」のように場所を明示する。正解のコードそのものは書かない）",',
   ' "weaknesses": [{"tag": "タグ", "note": "その弱点だと判断した根拠を1文で"}]}',
   'weaknessesは、解答から読み取れる「理解が怪しい概念」だけを入れます。完璧な解答なら空配列 [] にします。',
   '一貫性: goodで「できている」と書いた内容を、weaknessesに入れてはいけません。',
@@ -88,6 +88,21 @@ const setBusy = (busy) => {
   $('submit-btn').disabled = busy;
 };
 
+// 復習問題・展示の苦手問題をAIが作っている間は、画面全体をこの1枚で覆う。
+// 前の問題や完成イメージ・いまのプレビューが見えたままだと、できあがったコードが
+// 透けて見えてしまったり「まだこれをやればいい」と誤解されたりするため（2026-11-10）
+const setProblemGenerating = (label) => {
+  $('generating-screen-text').textContent = label;
+  $('generating-screen').hidden = false;
+  $('preview-frame').src = 'about:blank';
+};
+const clearProblemGenerating = () => {
+  $('generating-screen').hidden = true;
+  // showProblem() 側で新しい問題のプレビューに差し替えるので、ここでは
+  // 生成に失敗して問題が切り替わらなかった場合だけ元のプレビューに戻す
+  if ($('preview-frame').src === 'about:blank' && typeof reloadPreview === 'function') reloadPreview();
+};
+
 // starterには2つの形がある: 固定問題（seed-*）は{files, newFiles}のオブジェクト、
 // AI生成問題（gen-*）は従来通り `// --- path ---` 区切りの1本の文字列。ここで形を揃える
 const normalizeStarter = (starter) => {
@@ -112,7 +127,7 @@ const addCopyButtons = (container) => {
     btn.type = 'button';
     btn.textContent = 'コピー';
     btn.setAttribute('aria-label', 'このコードをコピー');
-    btn.style.cssText = 'position:absolute;top:8px;right:8px;font-size:12px;padding:4px 10px;border:1px solid var(--line,#ddd);border-radius:4px;background:var(--panel,#fff);color:inherit;cursor:pointer;z-index:1;';
+    btn.style.cssText = 'position:absolute;top:8px;right:8px;font-size:12px;padding:4px 10px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:inherit;cursor:pointer;z-index:1;';
     btn.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(codeText);
@@ -132,6 +147,7 @@ const addCopyButtons = (container) => {
 };
 
 const showProblem = (problem, generatedNote) => {
+  clearProblemGenerating();
   current = problem;
   $('problem-title').textContent = problem.title;
 
@@ -174,8 +190,10 @@ const showProblem = (problem, generatedNote) => {
     renderTextWithCode(descEl, problem.description);
   }
 
-  // 展示用（standalone）の問題はポートフォリオ全体の完成イメージと合わないので出さない
-  const hideReference = !!problem.standalone;
+  // 展示用（standalone）の問題・AI生成の苦手問題（gen-*）は、どちらも
+  // ポートフォリオ全体の reference.html（完成イメージ）とは無関係な内容なので出さない
+  // （2026-11-10: 苦手問題では不要と判断）
+  const hideReference = !!problem.standalone || String(problem.id || '').startsWith('gen-');
   if (hideReference) refHintEl.hidden = true;
   $('ref-toggle-btn').hidden = hideReference;
   if (hideReference && showingReference) $('ref-toggle-btn').click();
@@ -227,6 +245,7 @@ const showProblem = (problem, generatedNote) => {
     if (problem.id && !String(problem.id).startsWith('gen-')) {
       u.searchParams.set('unit', problem.id);
       u.searchParams.delete('review');
+      clearCachedReviewProblem();
     } else {
       u.searchParams.delete('unit');
     }
@@ -376,19 +395,6 @@ const renderResult = (result) => {
   $('result-sections').hidden = false;
   renderTextWithCode($('res-good'), result.good || '—');
   renderTextWithCode($('res-fix'), result.fix || '—');
-  renderTextWithCode($('res-hint'), result.hint || '—');
-};
-
-// 答え漏れ防止の最終ガード: AIがヒントに答えのコードを書いてしまっても、穴埋めに置き換える
-// （プロンプトだけでは軽量モデルが答えを書いてしまうことが実測で分かったため、決定的な層で守る）
-const redactAnswer = (text, problem) => {
-  let out = text || '';
-  (problem.answerPatterns || []).forEach((p) => {
-    try {
-      out = out.replace(new RegExp(p, 'g'), '〔ここは自分で考えてみよう〕');
-    } catch { /* 不正なパターンは無視 */ }
-  });
-  return out;
 };
 
 const parseJsonLoose = (text) => {
@@ -398,9 +404,14 @@ const parseJsonLoose = (text) => {
   return JSON.parse(text.slice(start, end + 1));
 };
 
+// Gemini設定・Claude選好はどちらも設定ページ（settings.html）で入力・保存されたlocalStorageを見る。
+// 学習画面には入力欄を置かない（同じ値を2箇所で編集できると、どちらが有効か分かりにくくなるため）
+const getGeminiKey = () => { try { return (localStorage.getItem('geminiKey') || '').trim(); } catch { return ''; } };
+const wantsClaude = () => { try { return localStorage.getItem('useClaude') === '1'; } catch { return false; } };
+
 const callGemini = async (system, user) => {
-  const key = $('gemini-key').value.trim();
-  if (!key) throw new Error('Gemini APIキーを入力してください');
+  const key = getGeminiKey();
+  if (!key) throw new Error('Gemini APIキーが未設定です。設定ページ（ナビの「設定」）で入力してください');
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${encodeURIComponent(key)}`;
   const res = await fetch(url, {
     method: 'POST',
@@ -432,8 +443,8 @@ const callClaude = async (system, user) => {
   return data.text;
 };
 
-// 「Claudeで採点」にチェックが入っている（または展示用の問題）なら Claude、それ以外は Gemini
-const useClaudeForGrading = () => current?.standalone || $('use-claude')?.checked;
+// 設定ページでClaudeを選んでいる（または展示用の問題）なら Claude、それ以外は Gemini
+const useClaudeForGrading = () => current?.standalone || wantsClaude();
 const callLLM = async (system, user) => {
   const raw = useClaudeForGrading() ? await callClaude(system, user) : await callGemini(system, user);
   return parseJsonLoose(raw);
@@ -502,9 +513,9 @@ const onSubmit = async () => {
     ].filter(Boolean).join('\n\n');
     const evalSys = current?.evalMode === 'html' ? EVAL_SYSTEM_HTML : EVAL_SYSTEM;
     let result = await callLLM(evalSys, user);
-    // 中国語混入の再チェック: まれに good/fix/hint に中国語が混じることがあるため、
+    // 中国語混入の再チェック: まれに good/fix に中国語が混じることがあるため、
     // 検知した場合は生成AI側と同じ方針（1回だけ作り直す）で対応する（prompts.js）
-    if (['good', 'fix', 'hint'].some((k) => looksChineseContaminated(result[k]))) {
+    if (['good', 'fix'].some((k) => looksChineseContaminated(result[k]))) {
       result = await callLLM(evalSys, user);
     }
     // 注入対策の第2段検証: プロンプトの指示だけに頼らず、採点AIが「合格」とした場合でも
@@ -514,8 +525,6 @@ const onSubmit = async () => {
       result.score = Math.min(result.score ?? 0, 40);
       result.fix = '提出コードの中に、AIへの指示のように読める文章が見つかりました。コードの中身だけで採点し直し、合格の判定を取り消しています。コードは指示文ではなく、Astroのコードとして書いてください。';
     }
-    result.hint = redactAnswer(result.hint, current);
-    result.fix = redactAnswer(result.fix, current);
     renderResult(result);
     if (current.standalone) {
       exhibitDirty = true;
@@ -547,6 +556,23 @@ const onSubmit = async () => {
   }
 };
 
+// 生成した復習問題はタブを閉じるまで覚えておく（sessionStorage）。
+// これが無いと、リロードのたびに generateReviewProblem() が呼ばれてAIへ再度問い合わせ、
+// review.astro を新しい問題で上書きしてしまう（書きかけのコードも消える・2026-11-10報告）
+const REVIEW_CACHE_KEY = 'reviewProblemCache';
+const loadCachedReviewProblem = () => {
+  try {
+    const raw = sessionStorage.getItem(REVIEW_CACHE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+};
+const saveCachedReviewProblem = (problem, badge) => {
+  try { sessionStorage.setItem(REVIEW_CACHE_KEY, JSON.stringify({ problem, badge })); } catch { /* ignore */ }
+};
+const clearCachedReviewProblem = () => {
+  try { sessionStorage.removeItem(REVIEW_CACHE_KEY); } catch { /* ignore */ }
+};
+
 // 復習（類題）問題の生成。遷移は「学習の道のり」の復習ノード・苦手ノートのCTAから
 // study.html?review=1 で呼ばれる想定（2026-09-30決定: study.html内で自動的に次の問題は出さない）
 const generateReviewProblem = async () => {
@@ -556,6 +582,7 @@ const generateReviewProblem = async () => {
     return;
   }
   setBusy(true);
+  setProblemGenerating('あなたの苦手に合わせた復習問題を作っています…');
   startTimer('あなたの苦手に合わせた復習問題を作っています…');
   try {
     const summary = entries
@@ -575,6 +602,7 @@ const generateReviewProblem = async () => {
     const { generated, errors: genErrors } = await generateWithRetry(callLLM, user, recordedTags);
     if (genErrors.length) {
       // それでもダメなら正直に伝える（弱点と無関係な問題を「復習」と偽らない）
+      clearProblemGenerating();
       stopTimer();
       setStatus('復習問題をうまく作れませんでした。少し経ってからもう一度試してください。');
       return;
@@ -585,22 +613,25 @@ const generateReviewProblem = async () => {
     // 復習問題は専用ページ src/pages/review.astro に用意する（ポートフォリオ本体を汚さず、
     // /review という専用ルートで書く・プレビューする・採点する）。まずそのファイルを置く。
     await postJson('/api/seed-review', { content: reviewCode }).catch(() => {});
-    showProblem(
-      {
-        id: `gen-${Date.now()}`,
-        title: generated.title,
-        description: `この問題は **src/pages/review.astro**（右のプレビューの /review）を直す問題です。VS Code でそのファイルを開いて書き換えましょう。\n\n${generated.description}`,
-        starter: { files: { 'src/pages/review.astro': reviewCode }, newFiles: {} },
-        previewPath: '/review',
-        checkpoints: generated.checkpoints || [],
-        targetTags: generated.targetTags || [],
-        answerPatterns: generated.answerPatterns || [],
-      },
-      `あなたの苦手「${tags}」に合わせてAIが作った復習問題です。合格すると苦手が回復します。`
-    );
+    const problem = {
+      id: `gen-${Date.now()}`,
+      title: generated.title,
+      description: `この問題は **src/pages/review.astro**（右のプレビューの /review）を直す問題です。VS Code でそのファイルを開いて書き換えましょう。\n\n${generated.description}`,
+      starter: { files: { 'src/pages/review.astro': reviewCode }, newFiles: {} },
+      previewPath: '/review',
+      checkpoints: generated.checkpoints || [],
+      targetTags: generated.targetTags || [],
+      answerPatterns: generated.answerPatterns || [],
+    };
+    // 「あなたの苦手」という診断口調だと、まだ何も書いていないファイルに対して
+    // 言われているように見えて分かりにくいので、「これから練習する内容」という言い方にする
+    const badge = `${tags} を練習する問題です。クリアすると苦手が解消します。`;
+    saveCachedReviewProblem(problem, badge);
+    showProblem(problem, badge);
     stopTimer();
     setStatus('復習問題を出題しました。');
   } catch (e) {
+    clearProblemGenerating();
     stopTimer();
     setStatus(`エラー: ${e.message}`);
   } finally {
@@ -709,10 +740,17 @@ const syncPreviewFromServer = async () => {
   } catch { /* サーバーが落ちている等。次の周期で再試行する */ }
 };
 
+const updateOpenLink = () => {
+  const port = Number($('preview-port').value) || 4321;
+  const path = current?.previewPath || '/';
+  const mode = showingReference ? 'reference' : 'preview';
+  $('preview-open-link').href = `preview-window.html?port=${port}&path=${encodeURIComponent(path)}&mode=${mode}`;
+};
+
 const reloadPreview = () => {
   const url = previewUrl();
   $('preview-frame').src = url;
-  $('preview-open-link').href = url;
+  updateOpenLink();
   localStorage.setItem(PREVIEW_PORT_KEY, String(Number($('preview-port').value) || 4321));
 };
 
@@ -767,6 +805,7 @@ const generateExhibitReviewProblem = async () => {
   if (!weaknesses.length) return;
   $('exhibit-review-btn').hidden = true;
   setBusy(true);
+  setProblemGenerating('あなたが間違えたところに合わせて、苦手問題を作っています…');
   startTimer('あなたが間違えたところに合わせて、苦手問題を作っています…');
   try {
     const files = await readWorkspaceFiles(exhibitFiles);
@@ -787,6 +826,7 @@ const generateExhibitReviewProblem = async () => {
     ].join('\n\n');
     const { generated, errors } = await generateWithRetry(callLLM, user, tags);
     if (errors.length) {
+      clearProblemGenerating();
       stopTimer();
       setStatus('苦手問題をうまく作れませんでした。もう一度押してみてください。');
       $('exhibit-review-btn').hidden = false;
@@ -815,6 +855,7 @@ const generateExhibitReviewProblem = async () => {
     stopTimer();
     setStatus('苦手問題を出題しました。VS Code で書いて保存し、「提出する」を押してください。');
   } catch (e) {
+    clearProblemGenerating();
     stopTimer();
     setStatus(`エラー: ${e.message}`);
     $('exhibit-review-btn').hidden = false;
@@ -866,7 +907,19 @@ const init = async () => {
     : Math.max(0, problems.findIndex((p) => !cleared.has(p.id)));
 
   if (params.get('review') === '1') {
-    generateReviewProblem();
+    // 「リロード」ではキャッシュを使い回す（書きかけを消さないため）が、
+    // 苦手ノート等から「練習する →」で新しく入ってきたとき（navigate）は
+    // 別の苦手問題のつもりなので、キャッシュがあっても使わず作り直す
+    // （2026-11-10報告: 他の苦手を練習しようとしても前のが出てくる）
+    let navType = null;
+    try { navType = performance.getEntriesByType('navigation')[0]?.type || null; } catch { /* ignore */ }
+    const freshEntry = navType === 'navigate';
+    const cached = loadCachedReviewProblem();
+    if (cached && !freshEntry) {
+      showProblem(cached.problem, cached.badge);
+    } else {
+      generateReviewProblem();
+    }
   } else {
     showProblem(problems[seedIndex]);
   }
@@ -920,19 +973,16 @@ const init = async () => {
     syncPreviewToggle();
   });
   syncPreviewToggle();
-  $('gemini-key').addEventListener('change', () => {
-    localStorage.setItem('geminiKey', $('gemini-key').value);
-  });
-  // 「Claudeで採点」トグル: 状態を覚え、Geminiキー欄の要否を見た目に反映する
-  const syncClaudeToggle = () => {
-    const on = $('use-claude').checked;
-    localStorage.setItem('useClaude', on ? '1' : '');
-    $('gemini-key').disabled = on;
-    $('gemini-key').placeholder = on ? 'Claude採点中（キー不要）' : 'Gemini APIキー';
-  };
-  try { $('use-claude').checked = localStorage.getItem('useClaude') === '1'; } catch { /* ignore */ }
-  $('use-claude').addEventListener('change', syncClaudeToggle);
-  syncClaudeToggle();
+
+  // 設定ページで「Claudeを使う」を選んでいる場合だけ、このPCのClaude Codeが実際に使えるか確認する
+  // （Gemini選択時はこのチェック自体が不要なので呼ばない）。使えなければ設定を戻してGeminiへ落とす
+  if (wantsClaude()) {
+    fetchClaudeStatus().then((status) => {
+      if (status.available) return;
+      try { localStorage.setItem('useClaude', ''); } catch { /* ignore */ }
+      setStatus(`このPCのClaude Codeが見つからないため、Geminiでの採点に切り替えました（${describeClaudeStatus(status).text}）。設定ページでGemini APIキーを入力してください。`);
+    });
+  }
   $('preview-reload-btn').addEventListener('click', () => {
     showingReference = false;
     $('ref-toggle-btn').textContent = '完成イメージ';
@@ -955,7 +1005,7 @@ const init = async () => {
     syncPreviewHeading();
     if (showingReference) {
       $('preview-frame').src = 'reference.html';
-      $('preview-open-link').href = 'reference.html';
+      updateOpenLink();
     } else {
       reloadPreview();
     }
@@ -969,9 +1019,6 @@ const init = async () => {
   setupPreviewStart();
   pollPreviewServer();
   setInterval(pollPreviewServer, 3000);
-
-  const savedKey = localStorage.getItem('geminiKey');
-  if (savedKey) $('gemini-key').value = savedKey;
 
   const config = await (await fetch('/api/config')).json();
   if (config.localMode) {
