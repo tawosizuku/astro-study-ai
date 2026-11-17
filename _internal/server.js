@@ -1005,6 +1005,12 @@ const lockExhibitHtml = (html, rel) => {
 http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://localhost:${PORT}`);
+    // 起動ファイルが「いま動いているのは、このフォルダのサーバーか」を確かめるために使う。
+    // clone し直した後などに古いフォルダのサーバーが残っていると、ページが not found になる（2026-11-15 テスターで発生）
+    if (req.method === 'GET' && url.pathname === '/api/health') {
+      sendJson(res, 200, PUBLIC_MODE ? { app: 'astro-study' } : { app: 'astro-study', root: fs.realpathSync(ROOT) });
+      return;
+    }
     const lockedTo = EXHIBIT_LOCK && !url.pathname.startsWith('/api/') ? exhibitRedirect(url) : null;
     if (lockedTo) {
       res.writeHead(302, { Location: lockedTo });

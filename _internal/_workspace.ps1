@@ -80,7 +80,32 @@ if (-not (Test-Path $lnk) -or $ws.CreateShortcut($lnk).TargetPath -ne $batFile) 
 # in the app root, and `cd /d "<missing>" && npm run dev` short-circuited, meaning the
 # preview silently never started. Project creation is now POST /api/workspace/create and
 # the preview is started from the study screen.
-$port8787Busy = (netstat -ano 2>$null | Where-Object { $_ -match ":8787\s.*LISTENING" }).Count -gt 0
+# Only reuse a running server if it belongs to THIS folder. A server left over from an older
+# clone answers on 8787 too, and the browser then gets "not found" (seen 2026-11-15).
+$serverDirReal = (Get-Item $ServerDir).FullName.TrimEnd('\')
+$runningRoot = $null
+try {
+    $health = Invoke-WebRequest "http://127.0.0.1:8787/api/health" -UseBasicParsing -TimeoutSec 2 | ConvertFrom-Json
+    $runningRoot = ([string]$health.root).TrimEnd('\')
+} catch { }
+if ($runningRoot -and ($runningRoot -ne $serverDirReal)) { $runningRoot = $null }
+if (-not $runningRoot) {
+    $listen = netstat -ano 2>$null | Where-Object { $_ -match ":8787\s.*LISTENING" } | Select-Object -First 1
+    if ($listen) {
+        $oldPid = [int](($listen -split '\s+')[-1])
+        $proc = Get-Process -Id $oldPid -ErrorAction SilentlyContinue
+        if ($proc -and $proc.ProcessName -eq 'node') {
+            Write-Host "[srv] Stopping a study server from another folder (PID $oldPid)" -ForegroundColor DarkGray
+            Stop-Process -Id $oldPid -Force
+            Start-Sleep -Seconds 1
+        } else {
+            Write-Host "[Error] Port 8787 is used by another app. Close it and try again." -ForegroundColor Red
+            Read-Host "  Press Enter to close"
+            exit 1
+        }
+    }
+}
+$port8787Busy = [bool]$runningRoot
 if ($port8787Busy) {
     Write-Host "[srv] Study server already running on :8787" -ForegroundColor DarkGray
 } else {
