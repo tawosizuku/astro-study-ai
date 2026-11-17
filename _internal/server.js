@@ -343,7 +343,9 @@ const openClaudeSetupTerminal = (stepName) => {
   const { spawn } = require('child_process');
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'astro-claude-setup-'));
   if (process.platform === 'darwin') {
-    // .command ファイルは open するとターミナル.appで実行される
+    // .command ファイルをターミナル.appで実行する。`open file` だけだと「.commandに関連付けられたアプリ」で
+    // 開かれ、VS Code等に関連付けが変わっているPCではエディタが開くだけでコマンドが実行されない
+    // （2026-11-17 テスターで発生）ので、-a Terminal でアプリを名指しする
     const file = path.join(dir, `claude-${stepName}.command`);
     fs.writeFileSync(file, [
       '#!/bin/bash',
@@ -356,7 +358,7 @@ const openClaudeSetupTerminal = (stepName) => {
       `echo "${step.after}"`,
       '',
     ].join('\n'), { mode: 0o755 });
-    spawn('open', [file], { detached: true, stdio: 'ignore' }).unref();
+    spawn('open', ['-a', 'Terminal', file], { detached: true, stdio: 'ignore' }).unref();
     return;
   }
   if (process.platform === 'win32') {
