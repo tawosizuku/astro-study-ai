@@ -237,6 +237,60 @@ GEMINI_API_KEY=xxxx npm run test:generation
 - **デザイン完全一致**: global.css を `--accent` 系トークン・明朝体（Shippori Mincho）・`.wrap`・`.btn`(角丸4px) 等のデザインシステムに。Hero/Works/About/CTA/Contact/Footer を reference.html と同じ構造・クラス名へ書き換え（セクションも追加）。`workspace/my-portfolio` に完成版を実装し `astro build` で検証済み
 - roadmap.html にフェーズタブを追加（⑥動き・⑦コンテンツ・⑧ルーティング）
 
+### 2026-11-19 追記: 詳細ページを1つ手でつくる単元（routing-0）
+
+- **routing-0**（phase: routing・routing-1 の前）: `src/pages/works/project-01.astro` を手で1つ作り、「ファイルの置き場所＝URL」と `../../` の import を先に体験させる。`/works/project-02` は404のまま残し、手で作ると困ることを次の単元の動機にする
+- **routing-1** はこの1ページを `[slug].astro` に作り替える流れに変更。`project-01.astro` を残すと `/works/project-01` だけ手書きのページが優先されて表示されるので、名前を変える手順と「残っていない」の評価観点を足した（starter.files に入れて、残っていれば採点で中身も読まれる）
+- 採点のプロンプトに「作業フォルダに無いファイル」を渡すようにした（study.js）。渡さないと、AI はファイルが本当に無いのか判断できなかった
+- 確認: テスト用コピーで、routing-0 の模範解答 → 合格、routing-1 で project-01.astro を残す → 不合格（残っていると指摘）、消す → 合格（残っていないことも確認）。いずれも Claude Code の実際の採点
+- 既に routing-1 をクリアした人は、routing-0 が未クリアとして出る
+
+### 2026-11-19 追記: 「動き」の単元を外し、完成イメージをチュートリアルの完成形にした
+
+- **interact-1（スマホ用メニューの開閉）を外した。** roadmap のタブ（⑦ 動き）と用語集の「動き」のまとまりも外し、タブの番号を詰めた（⑦ コンテンツ・⑧ ルーティング・⑨ アイランド）。island-1 の書き出しにあった interact-1 への言及も書き換えた。後の単元の雛形に Header は出てこないので、ほかの単元には影響しない
+- **完成イメージを作り直した。** 以前の `public/reference.html` は手書きのデザイン見本で、チュートリアルで実際にできあがるものと合っていなかった。いまは `public/reference/` に、チュートリアルを最後までやったポートフォリオを astro build したものを置いている（トップ＝`index.html`、作品の詳細ページ＝`works/project-0N.html`、タグの絞り込みの島も動く）
+  - 作り直し方: `cd _internal && npm run build:reference`（`scripts/build-reference.js`。依存は `workspace/_deps/node_modules` を使うので開発機でだけ実行できる）。**教材（problems.json）を変えたら実行して合わせること**
+  - 学習者は自分の index.astro に変更を重ねるので、後半の模範解答（content-2・island-1）で省かれている「その他」のセクション（rest-1）と `<style>`（works-3＋rest-2）も残して組み立てている
+  - 学習画面とプレビュー用の別タブでは、いまの単元の previewPath に合わせて完成イメージのページを出す（詳細ページの単元なら詳細ページ）。完成イメージを出している間は「プレビューが止まっています」の案内で覆わない
+
+### 2026-11-19 追記2: 島のカードを Card.astro と同じ形にした
+
+- island-1 の WorksFilter.jsx が、works で作った `Card.astro` とは別のカード（サムネ無しの `.wf-card`）を描いていたため、アイランドの単元で作品カードの見た目が変わり、完成イメージも works の単元と合っていなかった
+- 島（`.jsx`）からは `.astro` の部品を呼べないので、`Card.astro` と同じHTML（`.work-card`・`.work-thumb`・`.work-body`・`.work-tags`・詳細ページへの「詳しく見る」）を `.jsx` に書く形にした。`Card.astro` の `<style>` は島に効かないので、同じCSSを貼り付け用の `WorksFilter.css` に入れた。説明・手順・評価観点にも反映
+- content-2・island-1 の模範解答の `index.astro` を、省略なしのファイル丸ごとにした（省略版を丸写しすると About・Contact などのセクションと `<style>` が消えていた）。build-reference.js はこの island-1 の模範解答をそのまま使う
+- 確認: 完成イメージと、island-1 の模範解答を入れた学習者のプレビューで、カードの形・幅・リンク・タグの絞り込みが一致。island-1 の模範解答は Claude Code の採点で合格
+
+### 2026-11-19 追記3: 作品一覧ページ（routing-2）
+
+- Works の「すべて見る →」が works-1 の `/#works`（同じページの中）のまま、どの単元でも変わっていなかった
+- **routing-2「作品一覧ページをつくる」**（routing-1 の後・island-1 の前）を追加。`src/pages/works/index.astro` が `/works` になること（フォルダの index.astro はフォルダのURL）を、getCollection と Card の復習を兼ねて扱う。最後にトップの「すべて見る →」を `/works` に向ける。`<style>` はファイルの中だけに効くので、並べ方のCSSも一覧ページに書く
+- island-1 の模範解答の index.astro も `/works` に合わせた。完成イメージに一覧ページ（`reference/works.html`）を追加し、previewPath が `/works` の単元ではそれを出す
+- 確認: 学習者のプレビューと完成イメージの両方で「すべて見る」から一覧ページへ移動し、カード3枚が詳細ページにつながる。routing-2 の模範解答は Claude Code の採点で合格
+
+### 2026-11-19 追記4: お問い合わせ（Contact）のセクションを外した
+
+- rest-1 の `<section id="contact">`（連絡先とフォーム）と、rest-2 のそのCSS（`.contact-grid`・`.form-field` など）を外した。説明・手順・評価観点・答え隠しのパターンも合わせた
+- ナビ（header-1〜3）とフッター（rest-3）の「Contact」リンクを外した（4本 → 3本。header-1・header-3 の「4つ」の記述も3つに）
+- CTA帯の「Contactへ」ボタンは行き先が無くなるので、「メールを送る」（`mailto:you@example.com`）にした
+- 後半のファイル丸ごとの模範解答（content-2・routing-2・island-1）と完成イメージも作り直した
+- 確認: 学習者のプレビューと完成イメージで、セクションは top・works・copy・about・cta の5つ、ナビ・フッターは3本、ページ内リンクの行き先切れなし。rest-1・rest-2 の模範解答は Claude Code の採点で合格
+- あわせて、フッター（rest-3）の SNS アイコン（`.social-row`・`.social-btn`）も外した。rest-3 の模範解答は採点で合格
+- CTA帯（メールを送る）も外し、代わりに **History（これまでのこと）** の年表セクションを rest-1（HTML）・rest-2（CSS: `::before` の点。左の線は付けない）に入れた。CTA の `mailto:` は使わない。rest-1・rest-2 は採点で合格
+
+### 2026-11-19 追記5: 実務の作り方に合わせて組み立て方を直した
+
+実務で作られている Astro 5 のサイトと突き合わせて、教材の組み立て方が実務と違う3点を直した。
+
+- **Header を BaseLayout に置く**: header-1 で Header を BaseLayout の `<slot />` の上に置き、index.astro の空の `<header></header>` を消す。以降のページ（詳細ページ・作品一覧ページを含む）は `<Header />` も import も書かない。rest-3 の説明も「Header と同じようにフッターも BaseLayout に」に
+- **どのページでも使う形は global.css に**: works-2 で `.section`・`.section-head`・`.works-grid` を global.css の最後に書き足し、作品カードの見た目だけを index.astro の `<style>` に。routing-2 の一覧ページは並べ方のCSSを書き直さなくてよくなり、island-1 の WorksFilter.css からも `.works-grid` を外した。works-2 の説明に global.css と `<style>` の使い分けを追加
+- **フォルダ名を `src/layouts/` に**（Astro の公式ドキュメントと同じ複数形）
+- 「答えを見る」のコピーボタンを、ファイルが2つ以上の答えではファイルごとに出すようにした（works-2 は global.css と index.astro）
+- 確認: 完成イメージは見た目が変わらず、どのページもヘッダー・フッターが1つずつ、一覧ページも3列。header-1・works-2・rest-3・routing-0・routing-2 の模範解答は Claude Code の採点で合格。教材の完成コード（ルーティングまで）は Astro 5 でも警告なしで build できた
+
+### 2026-11-19 追記6: クラス名の接頭辞 `c-` を外した
+
+- `c-` は FLOCSS の「何度も使う小さな見た目の部品」の印だったが、教材で教える Astro のコンポーネント（.astro）と紛らわしく、`c-wrap` は分け方でもレイアウト用だったため、接頭辞を外した: `c-wrap` → `inner`、`c-eyebrow` → `eyebrow`、`c-btn`・`c-btn-primary` → `btn`・`btn-primary`、`c-link-arrow` → `link-arrow`（151か所。見た目は変わらない）
+
 以下の「ユーザーテスト」「ペルソナ一括実験」節は、再設計前の旧9問に対する記録（過去ログとして残す）。
 
 ## ユーザーテスト（初心者ペルソナ・2026-07-15）

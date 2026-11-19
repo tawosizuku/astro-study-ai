@@ -6,6 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node server.js",
-    "test:generation": "node scripts/test-generation.js"
+    "test:generation": "node scripts/test-generation.js",
+    "build:reference": "node scripts/build-reference.js"
   }
 }

@@ -34,7 +34,11 @@
   const reloadBtn = document.getElementById('preview-reload-btn');
 
   const render = () => {
-    frame.src = showingReference ? 'reference.html' : liveUrl;
+    // 完成イメージは、いま作っているページのもの（study.js の referenceUrl と同じ決め方）
+    const m = path.match(/^\/works\/([\w-]+)\/?$/);
+    const refUrl = /^\/works\/?$/.test(path) ? 'reference/works.html'
+      : m ? `reference/works/${m[1]}.html` : 'reference/index.html';
+    frame.src = showingReference ? refUrl : liveUrl;
     heading.textContent = showingReference ? '完成イメージ' : 'プレビュー';
     toggleBtn.textContent = showingReference ? '自分のコード' : '完成イメージ';
     toggleBtn.classList.toggle('is-active', showingReference);

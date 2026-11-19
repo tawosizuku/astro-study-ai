@@ -80,7 +80,7 @@ const GLOSSARY = [
       {
         term: 'スコープ付き <style>', en: '<style>',
         summary: '`.astro` ファイルの中に書いた `<style>` は、**そのファイルの中だけ**に効きます（他の部品に漏れません）。だから部品ごとに気軽にクラス名を付けられます。サイト全体で使う土台だけ `global.css` に置き、部品ごとの見た目は各ファイルの `<style>` に書くのが基本です。',
-        example: '<nav class="main-nav">…</nav>\n\n<style>\n  /* この .main-nav は、この部品の中だけに効く */\n  .main-nav { display: flex; gap: 32px; }\n</style>',
+        example: '<nav class="header-nav">…</nav>\n\n<style>\n  /* この .header-nav は、この部品の中だけに効く */\n  .header-nav { display: flex; gap: 32px; }\n</style>',
       },
       {
         term: '配列 + map()', en: '.map()',
@@ -96,16 +96,6 @@ const GLOSSARY = [
         term: 'slot（スロット）', en: '<slot />',
         summary: '部品の中に「**ここに呼び出し元の中身を入れる**」という空き枠を作るしくみ。`<slot />` と書いた場所へ、その部品で囲んだHTMLがそのまま入ります。\n\nprops が「名前や短い値」を渡すのに対して、slot は「**HTMLのかたまり（中身まるごと）**」を渡せるのが違いです。ページ共通の枠（BaseLayout）を作り、中身だけ差し替える、という使い方をします。',
         example: '// 枠を用意する側（BaseLayout.astro）\n---\nconst { title } = Astro.props;\n---\n<html>\n  <head><title>{title}</title></head>\n  <body>\n    <slot />   ← ここに下の中身が入る\n  </body>\n</html>\n\n// 中身を渡す側（index.astro）\n<BaseLayout title="ポートフォリオ">\n  <h1>ようこそ</h1>   ← これが <slot /> の位置へ\n  <p>私のサイトです</p>\n</BaseLayout>',
-      },
-    ],
-  },
-  {
-    phase: '動き', tag: 'interact',
-    items: [
-      {
-        term: '<script>（ブラウザで動くJS / islands）', en: '<script>',
-        summary: '`.astro` に `<script>` を書くと、その中のJavaScriptが**ブラウザで動きます**（ボタンを押したら開く、など）。Astro は必要な所だけJSを動かす考え方で、これを「島（islands）」と呼びます。React などの枠組みを島として動かす `client:` もありますが、ボタンの開閉くらいなら素の `<script>` で十分です。',
-        example: '<button class="nav-toggle">☰</button>\n<nav class="main-nav">…</nav>\n\n<script>\n  const toggle = document.querySelector(\'.nav-toggle\');\n  toggle.addEventListener(\'click\', () => {\n    document.querySelector(\'.site-header\').classList.toggle(\'is-open\');\n  });\n</script>',
       },
     ],
   },

@@ -16,6 +16,17 @@ const TAG_LABELS = {
 
 const $ = (id) => document.getElementById(id);
 
+// 完成イメージ（public/reference/ = チュートリアルを最後までやったポートフォリオを build したもの）の中の、
+// いま作っているページ。トップは index.html、作品一覧は works.html、作品の詳細ページは works/<名前>.html。
+// それ以外（復習問題の /review など）は完成イメージに無いのでトップを出す。
+// 作り直すときは scripts/build-reference.js（npm run build:reference）
+const referenceUrl = (previewPath) => {
+  const p = String(previewPath || '/');
+  if (/^\/works\/?$/.test(p)) return 'reference/works.html'; // 作品一覧ページ
+  const m = p.match(/^\/works\/([\w-]+)\/?$/);
+  return m ? `reference/works/${m[1]}.html` : 'reference/index.html';
+};
+
 // 弱点の「今の重要度」を、記録回数(count)から時間経過で減衰させて計算する。
 // 半減期30日: 30日間ノーミスだと重要度は半分になる。直近の弱点ほど復習で優先されやすくする
 const WEAKNESS_HALF_LIFE_DAYS = 30;
