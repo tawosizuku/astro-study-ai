@@ -717,6 +717,10 @@ const setupPreviewStart = () => {
     try {
       const data = await postJson('/api/preview/start', { port: Number($('preview-port').value) || 4321 });
       note.textContent = data.already ? 'すでに起動していました。' : '起動しました。まもなく表示されます。';
+      // 頼んだ番号がふさがっていると別の番号で起動するので、サーバーが読み取った実際の番号に合わせる
+      if (data.port) $('preview-port').value = data.port;
+      _previewOwned = null; // 次の確認まで待たずに出す（起動した本人なので学習者のもの）
+      _previewServerUp = false;
       reloadPreview();
     } catch (e) {
       note.textContent = e.message;
@@ -731,7 +735,15 @@ const syncPreviewFromServer = async () => {
     const res = await fetch('/api/preview');
     if (!res.ok) return;
     const info = await res.json();
-    if (!info || !info.url) return;
+    if (!info) return;
+    // サーバーが探して、学習者のプロジェクトのプレビューがどこにも無かった。
+    // このとき 4321 に別のプロジェクトが動いていても、それは映さない（「not found」に見えていた・2026-11-19）
+    if (info.checked && !info.running) {
+      if (_previewOwned !== false) { _previewOwned = false; pollPreviewServer(); }
+      return;
+    }
+    if (!info.url) return;
+    _previewOwned = true;
     const port = Number(new URL(info.url).port) || 4321;
     if (port === Number($('preview-port').value)) return; // 変わっていなければ触らない（再読み込みで画面が跳ねるため）
     $('preview-port').value = port;
@@ -758,8 +770,12 @@ const reloadPreview = () => {
 // ページを開いたとき astro dev がまだ起動していなくても、起動を検知して iframe を自動リロードする。
 // VS Code拡張を使わない環境（Cursor等）でも動作し、syncPreviewFromServer と独立して動く
 let _previewServerUp = false;
+// そのポートのサイトが学習者のプロジェクトか（サーバーの /api/preview が確かめる）。
+// null = まだ分からない／確かめられない（公開モードなど）。false のときは動いていても「止まっている」扱いにする
+let _previewOwned = null;
 const pollPreviewServer = async () => {
   try {
+    if (_previewOwned === false) throw new Error('not the learner project');
     await fetch(previewUrl(), { mode: 'no-cors' });
     const wasUp = _previewServerUp;
     _previewServerUp = true;
@@ -889,6 +905,12 @@ const startExhibitMode = async () => {
 };
 
 const init = async () => {
+  // 前回のプレビューの番号は、最初の問題を出す（＝ reloadPreview が番号を保存する）より先に戻す。
+  // 以前は問題を出したあとに戻していたので、既定の 4321 で上書きされて毎回 4321 に戻っていた
+  try {
+    const savedPort = localStorage.getItem(PREVIEW_PORT_KEY);
+    if (savedPort) $('preview-port').value = savedPort;
+  } catch { /* 使えなくても既定の番号で動く */ }
   const state = await getState();
   problems = state.problems;
   memory = state.memory;
@@ -1011,21 +1033,20 @@ const init = async () => {
     }
   });
 
-  const savedPort = localStorage.getItem(PREVIEW_PORT_KEY);
-  if (savedPort) $('preview-port').value = savedPort;
   reloadPreview();
 
-  // astro dev の起動を監視: VS Code拡張を使わない環境（Cursor等）でも動作する
+  // astro dev の起動を監視: VS Code拡張を使わない環境（Cursor等）でも動作する。
+  // ローカルモードでは先にサーバーに「学習者のプレビューはどのポートか」を聞いてから監視を始める
+  //（先に監視すると、4321 の別のプロジェクトのサイトが一瞬映るため）
   setupPreviewStart();
-  pollPreviewServer();
-  setInterval(pollPreviewServer, 3000);
-
   const config = await (await fetch('/api/config')).json();
   if (config.localMode) {
     watchVsCodeAnswer();
-    syncPreviewFromServer();
+    await syncPreviewFromServer();
     setInterval(syncPreviewFromServer, 3000);
   }
+  pollPreviewServer();
+  setInterval(pollPreviewServer, 3000);
 };
 
 window.onAuthReady = () => {

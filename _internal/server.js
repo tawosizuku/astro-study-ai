@@ -448,6 +448,31 @@ const previewBox = new Map();
 // 拡張は起動中ずっと一定間隔で知らせてくる。これより古い情報は「もう動いていない」とみなす
 const PREVIEW_STALE_MS = 45 * 1000;
 
+// そのポートで動いている astro dev が、学習者のプロジェクトのものかを確かめる。
+// 4321 を別のプロジェクト（学習者が仕事などで使っているもの）が使っていると、
+// 画面のプレビューにそのサイトがそのまま映り「not found」に見えていた（2026-11-19）。
+// Vite（astro dev の中身）は /@fs/<絶対パス> で自分のプロジェクトの中のファイルにだけ答え、
+// 外のファイルには 403 を返すので、学習者のフォルダの package.json を聞けば見分けられる
+const isOurPreview = async (port, workspaceDir) => {
+  const fsPath = '/@fs/' + workspaceDir.replace(/\\/g, '/').replace(/^\/+/, '') + '/package.json';
+  try {
+    const res = await fetch(`http://localhost:${port}${encodeURI(fsPath)}`, { signal: AbortSignal.timeout(800) });
+    return res.ok;
+  } catch {
+    return false;
+  }
+};
+
+// 学習者のプレビューが動いているポートを探す。この画面から起動したもの → 4321〜4330 の順
+// （4321 がふさがっていると astro dev は次の空いている番号で起動するため）
+const findPreviewPort = async (workspaceDir) => {
+  const candidates = [...new Set([previewPort, 4321, 4322, 4323, 4324, 4325, 4326, 4327, 4328, 4329, 4330].filter(Boolean))];
+  for (const port of candidates) {
+    if (await isOurPreview(port, workspaceDir)) return port;
+  }
+  return null;
+};
+
 const handleApi = async (req, res, url) => {
   if (PUBLIC_MODE && MACHINE_ONLY_PATHS.has(url.pathname)) {
     sendJson(res, 403, { error: 'この機能は公開サーバーでは使えません。手元のPCで動かしてください。' });
@@ -563,7 +588,12 @@ const handleApi = async (req, res, url) => {
       const entry = previewBox.get(userId);
       // VS Codeごと落ちた場合は PUT が来なくなるだけなので、古さで判断する
       const alive = !!entry && entry.running && Date.now() - entry.updatedAt < PREVIEW_STALE_MS;
-      sendJson(res, 200, { url: alive ? entry.url : null, running: alive });
+      if (alive) { sendJson(res, 200, { url: entry.url, running: true }); return; }
+      // 拡張から知らせが無いときは、学習者のプロジェクトの astro dev をこちらで探す。
+      // checked: true は「探した結果」なので、見つからなければ画面は 4321 の別サイトを映さない
+      const workspaceDir = getWorkspaceDir();
+      const port = workspaceDir ? await findPreviewPort(workspaceDir) : null;
+      sendJson(res, 200, { url: port ? `http://localhost:${port}` : null, running: !!port, checked: !!workspaceDir });
       return;
     }
   }
@@ -766,6 +796,9 @@ const handleApi = async (req, res, url) => {
     if (!workspaceDir) { sendJson(res, 400, { error: 'プロジェクトの場所がまだ決まっていません' }); return; }
     const port = Number((await readBody(req)).port) || 4321;
     if (previewProc && !previewProc.killed) { sendJson(res, 200, { ok: true, already: true, port: previewPort }); return; }
+    // ターミナルなどで学習者が自分で起動したものが動いていれば、二重に立てずにそれを使う
+    const running = await findPreviewPort(workspaceDir);
+    if (running) { previewPort = running; sendJson(res, 200, { ok: true, already: true, port: running }); return; }
 
     const bin = path.join(workspaceDir, 'node_modules', '.bin', process.platform === 'win32' ? 'astro.cmd' : 'astro');
     if (!fs.existsSync(bin)) {
@@ -777,15 +810,31 @@ const handleApi = async (req, res, url) => {
         cwd: workspaceDir, shell: process.platform === 'win32', windowsHide: true, env: childEnv(),
       });
       let log = '';
-      child.stdout.on('data', (d) => { log += d.toString(); });
-      child.stderr.on('data', (d) => { log += d.toString(); });
-      child.on('exit', () => { previewProc = null; });
+      // 頼んだ番号がふさがっていると、astro dev は次の空いている番号で起動する。
+      // 起動時に出す「Local http://localhost:XXXX/」から、実際の番号を読み取る
+      let actualPort = null;
+      let onPort = () => {};
+      const onData = (d) => {
+        log += d.toString();
+        const m = !actualPort && log.replace(/\x1b\[[0-9;]*m/g, '').match(/Local\s+https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\]):(\d+)/);
+        if (m) { actualPort = Number(m[1]); onPort(); }
+      };
+      child.stdout.on('data', onData);
+      child.stderr.on('data', onData);
+      child.on('exit', () => {
+        if (previewProc === child) { previewProc = null; previewPort = null; }
+        onPort();
+      });
       previewProc = child;
       previewPort = port;
-      // 立ち上がるまで少し待ってから返す（すぐ落ちた場合はその理由を返したい）
-      await new Promise((r) => setTimeout(r, 2500));
-      if (!previewProc) { sendJson(res, 500, { error: `起動できませんでした: ${log.trim().slice(-300) || '原因不明'}` }); return; }
-      sendJson(res, 200, { ok: true, port });
+      // 番号が出るまで待つ（すぐ落ちた場合はその理由を返したい）。出なくても15秒で返す
+      await new Promise((r) => {
+        const timer = setTimeout(r, 15000);
+        onPort = () => { clearTimeout(timer); r(); };
+      });
+      if (previewProc !== child) { sendJson(res, 500, { error: `起動できませんでした: ${log.trim().slice(-300) || '原因不明'}` }); return; }
+      if (actualPort) previewPort = actualPort;
+      sendJson(res, 200, { ok: true, port: previewPort });
     } catch (e) {
       previewProc = null;
       sendJson(res, 500, { error: `起動できませんでした: ${e.message}` });
