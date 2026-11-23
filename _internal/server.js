@@ -74,6 +74,15 @@ const childEnv = () => ({
   PATH: path.dirname(process.execPath) + path.delimiter + (process.env.PATH || ''),
 });
 
+// 子プロセスの起動のしかたを OS に合わせて返す: [コマンド, 引数, shell]。
+// Windows の .cmd（npm.cmd・astro.cmd・code.cmd）は shell 経由でしか起動できないが、そのとき Node は
+// 引数を引用符なしでつなぐため、「C:\Program Files\nodejs\npm.cmd」やユーザー名に空白のあるパスが
+// 途中で切れて失敗していた（2026-11-23 レビューで発見）。Windows のパスには " を使えないので、
+// 各要素を " で囲んだ1本のコマンド文字列にして渡す。Mac/Linux は shell を通さずそのまま渡す
+const spawnSpec = (cmd, args) => (process.platform === 'win32'
+  ? [[cmd, ...args].map((a) => `"${a}"`).join(' '), [], true]
+  : [cmd, args, false]);
+
 // こちらから起動した astro dev。二重起動を防ぎ、終了を検知するために持っておく
 let previewProc = null;
 let previewPort = null;
@@ -690,14 +699,15 @@ const handleApi = async (req, res, url) => {
     const appName = isCursor ? 'Cursor' : 'Visual Studio Code';
     const cliName = isCursor ? 'cursor' : 'code';
     const attempts = process.platform === 'darwin'
-      ? [{ cmd: 'open', args: ['-a', appName, workspacePath], shell: false },
-         { cmd: cliName, args: [workspacePath], shell: true }]
-      : [{ cmd: cliName, args: [workspacePath], shell: true }];
+      ? [{ cmd: 'open', args: ['-a', appName, workspacePath] },
+         { cmd: cliName, args: [workspacePath] }]
+      : [{ cmd: cliName, args: [workspacePath] }];
 
-    const tryOpen = ({ cmd, args, shell }) => new Promise((resolve) => {
+    const tryOpen = ({ cmd: name, args: list }) => new Promise((resolve) => {
       let settled = false;
       const done = (ok, msg) => { if (!settled) { settled = true; resolve({ ok, msg }); } };
       try {
+        const [cmd, args, shell] = spawnSpec(name, list);
         const child = require('child_process').spawn(cmd, args, { shell, windowsHide: true });
         let err = '';
         if (child.stderr) child.stderr.on('data', (d) => { err += d.toString(); });
@@ -806,8 +816,9 @@ const handleApi = async (req, res, url) => {
       return;
     }
     try {
-      const child = require('child_process').spawn(bin, ['dev', '--port', String(port)], {
-        cwd: workspaceDir, shell: process.platform === 'win32', windowsHide: true, env: childEnv(),
+      const [cmd, args, shell] = spawnSpec(bin, ['dev', '--port', String(port)]);
+      const child = require('child_process').spawn(cmd, args, {
+        cwd: workspaceDir, shell, windowsHide: true, env: childEnv(),
       });
       let log = '';
       // 頼んだ番号がふさがっていると、astro dev は次の空いている番号で起動する。
@@ -935,8 +946,9 @@ const handleApi = async (req, res, url) => {
         // ~/.npm に root 所有のファイルが残っていて EACCES で失敗する（2026-11-15 テスターのMacで発生）
         const npmCache = path.join(ROOT, '.npm-cache');
         try {
-          execFileSync(npm, ['install', '--no-audit', '--no-fund', '--cache', npmCache], {
-            cwd: target, shell: process.platform === 'win32', windowsHide: true,
+          const [cmd, args, shell] = spawnSpec(npm, ['install', '--no-audit', '--no-fund', '--cache', npmCache]);
+          execFileSync(cmd, args, {
+            cwd: target, shell, windowsHide: true,
             timeout: 10 * 60 * 1000, stdio: 'pipe', env: childEnv(),
           });
           deps = 'installed';
@@ -1017,7 +1029,8 @@ const handleApi = async (req, res, url) => {
 const serveStatic = (res, pathname) => {
   const rel = pathname === '/' ? 'index.html' : pathname.replace(/^\/+/, '');
   const filePath = path.join(PUBLIC_DIR, rel);
-  if (!filePath.startsWith(PUBLIC_DIR) || !fs.existsSync(filePath)) {
+  // フォルダ（/reference/ など）を読もうとすると、200 を返した後に例外になりサーバーごと落ちていた（2026-11-23）
+  if (!filePath.startsWith(PUBLIC_DIR) || !fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
     res.writeHead(404); res.end('not found');
     return;
   }
@@ -1053,9 +1066,38 @@ const lockExhibitHtml = (html, rel) => {
     .replace('</head>', '<style>.weak-card__cta-row{display:none!important}</style>\n</head>');
 };
 
+// ---------- よそのサイトからの操作を断る（2026-11-23） ----------
+// 学習者がアプリを起動したまま別のサイトを開くと、そのページから 127.0.0.1:8787 へ POST を送れる。
+// 以前は open-terminal 以外は素通りで、記録の消去・フォルダの削除・review.astro への書き込み
+//（astro dev が実行するので、このPCで任意のコードが動く）までできてしまっていた。
+// - ローカルモードでは Host が 127.0.0.1 / localhost 以外なら断る（DNS rebinding 対策。
+//   攻撃者のドメインを 127.0.0.1 に向けると、Origin と Host がそろって同じ画面に見えてしまう）
+// - 書き換えの要求（GET/HEAD 以外）は、Origin があればこの画面と同じかを見る。
+//   VS Code拡張・起動ファイル（curl）は Origin を付けないので通る。ブラウザは別サイトからの POST に必ず付ける
+// - /reset-exhibit は GET で記録を消すので、別サイトからのリンク・画像読み込みも断る（Sec-Fetch-Site）
+const LOCAL_HOSTS = new Set([`127.0.0.1:${PORT}`, `localhost:${PORT}`, `[::1]:${PORT}`]);
+const rejectForeignRequest = (req, url) => {
+  const host = String(req.headers.host || '').toLowerCase();
+  if (LOCAL_MODE && !LOCAL_HOSTS.has(host)) return 'このアドレスからは使えません';
+  const isApi = url.pathname.startsWith('/api/') || url.pathname === '/reset-exhibit';
+  if (!isApi) return null;
+  const fetchSite = req.headers['sec-fetch-site'];
+  if (fetchSite === 'cross-site' || fetchSite === 'same-site') return 'この画面以外からは実行できません';
+  if (req.method === 'GET' || req.method === 'HEAD') return null;
+  const origin = req.headers.origin;
+  if (origin !== undefined) {
+    let originHost = null;
+    try { originHost = new URL(origin).host.toLowerCase(); } catch { /* "null" など */ }
+    if (originHost !== host) return 'この画面以外からは実行できません';
+  }
+  return null;
+};
+
 http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://localhost:${PORT}`);
+    const blocked = rejectForeignRequest(req, url);
+    if (blocked) { sendJson(res, 403, { error: blocked }); return; }
     // 起動ファイルが「いま動いているのは、このフォルダのサーバーか」を確かめるために使う。
     // clone し直した後などに古いフォルダのサーバーが残っていると、ページが not found になる（2026-11-15 テスターで発生）
     if (req.method === 'GET' && url.pathname === '/api/health') {
@@ -1073,6 +1115,8 @@ http.createServer(async (req, res) => {
       serveStatic(res, url.pathname);
     }
   } catch (e) {
+    // 返事を書き始めた後の例外で、もう一度ヘッダーを書くと、それ自体が例外になってプロセスが落ちる
+    if (res.headersSent) { console.error(e); res.end(); return; }
     sendJson(res, 500, { error: String(e) });
   }
 }).listen(PORT, LOCAL_MODE ? '127.0.0.1' : undefined, () => {
