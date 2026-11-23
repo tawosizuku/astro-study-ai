@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // 類題生成AIの回帰テスト。
 // いくつかの「弱点履歴」パターンについて実際にAIに類題を生成させ、
-// スキーマ・targetTagsの妥当性・answerPatternsの有無を機械的にチェックする。
+// スキーマ・targetTagsの妥当性を機械的にチェックする。
 // CIではなく、ローカルで `npm run test:generation` として都度実行する運用を想定
 // （サーバー常時稼働を前提にしない。プロトタイプREADME参照）。
 //
@@ -17,7 +17,7 @@ const buildUser = (fixture) => {
   const summary = fixture.weaknesses
     .map((w) => `- ${w.tag}（重要度${w.importance.toFixed(1)}、記録${w.count}回、最終確認${w.seenAgo}）: ${w.note}`)
     .join('\n');
-  return `# 学習者の弱点履歴（回数の多い順）\n${summary}\n\n# 直近の学習履歴\n（履歴なし）`;
+  return `# 学習者の弱点履歴（重要度の高い順）\n${summary}\n\n# 直近の学習履歴\n（履歴なし）`;
 };
 
 const FIXTURES = [
@@ -84,7 +84,7 @@ const main = async () => {
       errors.forEach((e) => console.log(`    - ${e}`));
       if (generated) console.log(`    生成結果: ${JSON.stringify(generated).slice(0, 300)}`);
     } else {
-      console.log(`OK（targetTags: ${generated.targetTags.join(', ')} / answerPatterns: ${generated.answerPatterns.length}件）`);
+      console.log(`OK（targetTags: ${generated.targetTags.join(', ')}）`);
     }
   }
   console.log(`\n${FIXTURES.length - failCount}/${FIXTURES.length} 件パス`);
